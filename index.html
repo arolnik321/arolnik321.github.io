@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Rolnik — Senior Solutions Architect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:      #0d1117;
+            --bg2:     #161b22;
+            --bg3:     #21262d;
+            --border:  #30363d;
+            --text:    #e6edf3;
+            --muted:   #7d8590;
+            --green:   #3fb950;
+            --cyan:    #79c0ff;
+            --orange:  #ffa657;
+            --purple:  #d2a8ff;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar            { width: 5px; }
+        ::-webkit-scrollbar-track      { background: var(--bg); }
+        ::-webkit-scrollbar-thumb      { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover{ background: var(--muted); }
+        ::selection                    { background: rgba(63,185,80,0.25); }
+
+        /* ── NAV ──────────────────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(13,17,23,0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            height: 52px;
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+        .nav-logo {
+            color: var(--green); font-weight: 700; font-size: 0.875rem;
+            text-decoration: none; letter-spacing: -0.02em;
+        }
+        .nav-logo em { color: var(--muted); font-style: normal; font-weight: 300; }
+        .nav-links { display: flex; list-style: none; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none;
+            font-size: 0.78rem; padding: 0.35rem 0.7rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a::before { content: '~/'; color: var(--green); opacity: 0; transition: opacity 0.2s; }
+        .nav-links a:hover::before { opacity: 1; }
+
+        /* ── HERO ─────────────────────────────────────────────── */
+        #hero {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 5rem 2rem 3rem;
+            position: relative;
+        }
+        #hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(63,185,80,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(63,185,80,0.035) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+        #hero::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 55% at 50% 38%, rgba(63,185,80,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-terminal {
+            max-width: 740px; width: 100%;
+            position: relative; z-index: 1;
+        }
+        .terminal-window {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+        }
+        .terminal-header {
+            background: var(--bg3);
+            border-bottom: 1px solid var(--border);
+            padding: 0.6rem 1rem;
+            display: flex; align-items: center; gap: 0.45rem;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-r { background: #ff5f57; }
+        .dot-y { background: #febc2e; }
+        .dot-g { background: #28c840; }
+        .terminal-title {
+            flex: 1; text-align: center;
+            font-size: 0.73rem; color: var(--muted);
+        }
+        .terminal-body {
+            padding: 1.5rem; min-height: 290px; font-size: 0.88rem;
+        }
+
+        /* terminal line types */
+        .prompt-line { display: flex; align-items: baseline; gap: 0; margin-bottom: 0.2rem; flex-wrap: wrap; }
+        .p-user   { color: var(--green); }
+        .p-at     { color: var(--muted); }
+        .p-host   { color: var(--cyan); }
+        .p-path   { color: var(--purple); }
+        .p-sym    { color: var(--green); }
+        .p-cmd    { color: var(--text); margin-left: 0.4rem; }
+        .out      { margin: 0.08rem 0; color: var(--muted); }
+        .out.hi   { color: var(--text); }
+        .out.gr   { color: var(--green); }
+        .out.cy   { color: var(--cyan); }
+        .out.big  { font-size: 1.9rem; font-weight: 700; color: var(--text); line-height: 1.25; margin: 0.5rem 0 0.25rem; }
+
+        .cursor {
+            display: inline-block; width: 8px; height: 1.05em;
+            background: var(--green); vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        /* skip button */
+        #skipBtn {
+            position: fixed; top: 64px; right: 2rem; z-index: 200;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted); font-family: inherit; font-size: 0.73rem;
+            padding: 0.28rem 0.7rem; border-radius: 4px; cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+            display: none;
+        }
+        #skipBtn:hover { border-color: var(--green); color: var(--green); }
+
+        /* ── MAIN ─────────────────────────────────────────────── */
+        main { max-width: 900px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+        section { margin-bottom: 5rem; }
+
+        .sec-head {
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .sec-cmd { font-size: 0.82rem; white-space: nowrap; }
+        .sec-cmd .c { color: var(--cyan); }
+        .sec-cmd .a { color: var(--orange); }
+        .sec-line { flex: 1; height: 1px; background: var(--border); }
+
+        /* ── ABOUT ────────────────────────────────────────────── */
+        .about-grid {
+            display: grid; grid-template-columns: 1fr 270px; gap: 3rem; align-items: start;
+        }
+        .about-text p {
+            color: var(--muted); font-size: 0.85rem; line-height: 1.85;
+            margin-bottom: 1rem;
+        }
+        .about-text p b   { color: var(--text); font-weight: 500; }
+        .about-text p .g  { color: var(--green); }
+        .about-text p .cy { color: var(--cyan); }
+
+        .stat-grid { display: flex; flex-direction: column; gap: 0.65rem; }
+        .stat {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.85rem 1.1rem;
+            transition: border-color 0.2s;
+        }
+        .stat:hover { border-color: var(--green); }
+        .stat-n { font-size: 1.45rem; font-weight: 700; color: var(--green); }
+        .stat-l { font-size: 0.72rem; color: var(--muted); }
+
+        /* ── SKILLS ───────────────────────────────────────────── */
+        .skills-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem;
+        }
+        .sk-group {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.1rem 1.1rem 1.1rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .sk-group:hover { border-color: var(--green); transform: translateY(-2px); }
+        .sk-title {
+            font-size: 0.68rem; color: var(--green); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.4rem;
+        }
+        .sk-title::before { content: '▸'; }
+        .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .tag {
+            font-size: 0.7rem; padding: 0.18rem 0.5rem;
+            border: 1px solid var(--border); border-radius: 4px;
+            color: var(--muted); background: var(--bg3);
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .tag:hover { border-color: var(--cyan); color: var(--cyan); }
+
+        /* ── EXPERIENCE ───────────────────────────────────────── */
+        .exp-list { display: flex; flex-direction: column; }
+        .exp-item { display: grid; grid-template-columns: 22px 1fr; gap: 0 1.1rem; }
+
+        .exp-spine { display: flex; flex-direction: column; align-items: center; }
+        .exp-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--border); border: 2px solid var(--bg3);
+            margin-top: 5px; flex-shrink: 0; transition: background 0.2s;
+        }
+        .exp-item:first-child .exp-dot { background: var(--green); box-shadow: 0 0 8px rgba(63,185,80,0.5); }
+        .exp-wire { width: 1px; flex: 1; background: var(--border); margin-top: 3px; min-height: 18px; }
+        .exp-item:last-child .exp-wire { display: none; }
+
+        .exp-body { padding-bottom: 2.25rem; }
+        .exp-co {
+            font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem;
+        }
+        .exp-co small { color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+
+        .roles { display: flex; flex-direction: column; gap: 0.6rem; }
+        .role {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-left: 2px solid var(--border);
+            border-radius: 0 6px 6px 0; padding: 0.7rem 1rem;
+            transition: border-left-color 0.2s;
+        }
+        .role:hover { border-left-color: var(--green); }
+        .role-hd {
+            display: flex; justify-content: space-between;
+            align-items: baseline; flex-wrap: wrap; gap: 0.2rem;
+            margin-bottom: 0.45rem;
+        }
+        .role-title { font-size: 0.83rem; color: var(--cyan); }
+        .role-dates { font-size: 0.72rem; color: var(--muted); }
+        .bullets { list-style: none; display: flex; flex-direction: column; gap: 0.28rem; }
+        .bullets li {
+            font-size: 0.78rem; color: var(--muted);
+            padding-left: 1rem; position: relative; line-height: 1.55;
+        }
+        .bullets li::before {
+            content: '▸'; position: absolute; left: 0;
+            color: var(--green); font-size: 0.68rem; top: 0.06em;
+        }
+
+        /* ── EDUCATION ────────────────────────────────────────── */
+        .edu-card {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.5rem 1.75rem;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; transition: border-color 0.2s;
+        }
+        .edu-card:hover { border-color: var(--green); }
+        .edu-school { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+        .edu-deg    { font-size: 0.8rem; color: var(--muted); }
+        .edu-yr     { font-size: 0.85rem; color: var(--green); white-space: nowrap; }
+
+        /* ── CONTACT ──────────────────────────────────────────── */
+        .contact-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.9rem; }
+        .contact-card {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.25rem;
+            text-decoration: none; display: block;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .contact-card:hover { border-color: var(--green); transform: translateY(-2px); }
+        .contact-ico   { font-size: 1.15rem; margin-bottom: 0.45rem; }
+        .contact-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem; }
+        .contact-val   { font-size: 0.78rem; color: var(--cyan); }
+
+        /* ── FOOTER ───────────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem; text-align: center;
+        }
+        footer p { font-size: 0.73rem; color: var(--muted); }
+        footer b  { color: var(--green); font-weight: 400; }
+
+        /* ── FADE-IN ──────────────────────────────────────────── */
+        .fi {
+            opacity: 0; transform: translateY(18px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fi.vis { opacity: 1; transform: translateY(0); }
+        .fi.d1  { transition-delay: 0.1s; }
+        .fi.d2  { transition-delay: 0.2s; }
+
+        /* ── RESPONSIVE ───────────────────────────────────────── */
+        @media (max-width: 720px) {
+            nav { padding: 0 1rem; }
+            .nav-links a { padding: 0.35rem 0.45rem; font-size: 0.72rem; }
+            .about-grid  { grid-template-columns: 1fr; }
+            .stat-grid   { flex-direction: row; flex-wrap: wrap; }
+            .stat        { flex: 1; min-width: 110px; }
+            .skills-grid { grid-template-columns: 1fr 1fr; }
+            .contact-grid{ grid-template-columns: 1fr; }
+            .terminal-body { font-size: 0.8rem; }
+            .out.big     { font-size: 1.35rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+<nav>
+    <a href="#hero" class="nav-logo">alex<em>@rolnik</em></a>
+    <ul class="nav-links">
+        <li><a href="#about">about</a></li>
+        <li><a href="#skills">skills</a></li>
+        <li><a href="#experience">experience</a></li>
+        <li><a href="#education">education</a></li>
+        <li><a href="#contact">contact</a></li>
+    </ul>
+</nav>
+
+<button id="skipBtn" onclick="skip()">skip animation ↓</button>
+
+<!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+<section id="hero">
+    <div class="hero-terminal">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+                <span class="terminal-title">alex@portfolio — zsh — 80×24</span>
+            </div>
+            <div class="terminal-body" id="tb"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MAIN ──────────────────────────────────────────────────────────────── -->
+<main>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <div class="sec-head fi">
+            <span class="sec-cmd"><span class="c">cat</span> <span class="a">about.txt</span></span>
+            <div class="sec-line"></div>
+        </div>
+        <div class="about-grid fi d1">
+            <div class="about-text">
+                <p>I'm a <span class="g">Senior Solutions Architect</span> specializing in
+                <b>data analytics, data architecture, and enterprise client implementations</b> —
+                turning complex technical requirements into solutions that actually ship.</p>
+
+                <p>Over the past decade I've worked directly with clients across healthcare data, fintech,
+                and SaaS — owning everything from technical discovery and pipeline design to go-live and
+                stakeholder alignment. Whether it's a <span class="cy">Snowflake data mart</span>, a
+                custom Python automation, or an <span class="g">AI agent</span> that cuts SLAs,
+                I get it across the finish line.</p>
+            </div>
+            <div class="stat-grid">
+                <div class="stat"><div class="stat-n">10+</div><div class="stat-l">years of experience</div></div>
+                <div class="stat"><div class="stat-n">50+</div><div class="stat-l">client engagements</div></div>
+                <div class="stat"><div class="stat-n">3</div><div class="stat-l">AI agents shipped</div></div>
+                <div class="stat"><div class="stat-n">40h</div><div class="stat-l">saved per month via automation</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+        <div class="sec-head fi">
+            <span class="sec-cmd"><span class="c">cat</span> <span class="a">skills.json</span></span>
+            <div class="sec-line"></div>
+        </div>
+        <div class="skills-grid fi d1">
+            <div class="sk-group">
+                <div class="sk-title">Software & Platforms</div>
+                <div class="tags">
+                    <span class="tag">Snowflake</span><span class="tag">BigQuery</span>
+                    <span class="tag">Databricks</span><span class="tag">Redshift</span>
+                    <span class="tag">dbt Cloud</span><span class="tag">Tableau</span>
+                    <span class="tag">AWS</span><span class="tag">AWS CLI</span>
+                    <span class="tag">Datavant</span><span class="tag">SQL Server</span>
+                    <span class="tag">Oracle SQL</span>
+                </div>
+            </div>
+            <div class="sk-group">
+                <div class="sk-title">AI & Automation</div>
+                <div class="tags">
+                    <span class="tag">Claude AI</span><span class="tag">LLMs</span>
+                    <span class="tag">Cursor</span><span class="tag">Glean AI</span>
+                    <span class="tag">AI Agents</span><span class="tag">Prompt Eng.</span>
+                    <span class="tag">Python Scripting</span><span class="tag">Workflow Automation</span>
+                </div>
+            </div>
+            <div class="sk-group">
+                <div class="sk-title">Languages</div>
+                <div class="tags">
+                    <span class="tag">SQL</span><span class="tag">Python</span>
+                    <span class="tag">JavaScript</span><span class="tag">Excel VBA</span>
+                    <span class="tag">Google Apps Script</span>
+                    <span class="tag">JSON</span><span class="tag">YAML</span>
+                </div>
+            </div>
+            <div class="sk-group">
+                <div class="sk-title">Methodologies</div>
+                <div class="tags">
+                    <span class="tag">ELT / ETL</span><span class="tag">REST API</span>
+                    <span class="tag">Data Analytics</span><span class="tag">Agile</span>
+                    <span class="tag">Project Mgmt</span><span class="tag">Product Mgmt</span>
+                    <span class="tag">UI/UX Design</span><span class="tag">UAT</span>
+                    <span class="tag">Product Analytics</span>
+                </div>
+            </div>
+            <div class="sk-group">
+                <div class="sk-title">Dev & Collaboration</div>
+                <div class="tags">
+                    <span class="tag">GitHub</span><span class="tag">Postman</span>
+                    <span class="tag">JIRA</span><span class="tag">Confluence</span>
+                    <span class="tag">Asana</span>
+                </div>
+            </div>
+            <div class="sk-group">
+                <div class="sk-title">Data Engineering</div>
+                <div class="tags">
+                    <span class="tag">Snowflake Procs</span><span class="tag">T-SQL</span>
+                    <span class="tag">PL/SQL</span><span class="tag">Stored Procedures</span>
+                    <span class="tag">Batch Jobs</span><span class="tag">ETL Templates</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+        <div class="sec-head fi">
+            <span class="sec-cmd"><span class="c">ls</span> <span class="a">-la experience/</span></span>
+            <div class="sec-line"></div>
+        </div>
+        <div class="exp-list fi d1">
+
+            <!-- Komodo -->
+            <div class="exp-item">
+                <div class="exp-spine"><div class="exp-dot"></div><div class="exp-wire"></div></div>
+                <div class="exp-body">
+                    <div class="exp-co">Komodo Health, Inc. <small>| New York, NY</small></div>
+                    <div class="roles">
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Senior Solutions Architect IV</span>
+                                <span class="role-dates">Apr 2024 – Present</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Developed 3 internal applications to reduce SA administrative burden using Cursor and Claude AI</li>
+                                <li>Created 3 technical AI agents to shorten implementation SLAs across Komodo's product suite</li>
+                                <li>Served on Komodo's AI Council — Adoption & Enablement Team, driving org-wide AI integration initiatives</li>
+                                <li>Spearheaded on-time delivery of standard and custom solutions across 50+ client engagements</li>
+                                <li>Automated 15 ongoing client deliveries with bespoke Python scripts, saving 40 hours per month</li>
+                                <li>Led onboarding and mentorship of new Solutions Architects to full self-sufficiency in 3 months</li>
+                            </ul>
+                        </div>
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Senior Solutions Architect III</span>
+                                <span class="role-dates">Jun 2022 – Mar 2024</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Implemented standard and customized Komodo products across 20+ client engagements</li>
+                                <li>Produced implementation guidelines and video walkthroughs for 4 products — cut deployment time by 50%</li>
+                                <li>Built Snowflake Procedures and Tasks to automate dynamic, recurring data deliveries</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rivery -->
+            <div class="exp-item">
+                <div class="exp-spine"><div class="exp-dot"></div><div class="exp-wire"></div></div>
+                <div class="exp-body">
+                    <div class="exp-co">Rivery Technologies Inc. <small>| New York, NY</small></div>
+                    <div class="roles">
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Lead Solutions Architect</span>
+                                <span class="role-dates">May 2021 – May 2022</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Engineered 50+ end-to-end ETL workflow templates for API-to-data-warehouse pipelines</li>
+                                <li>Strategized future product features and roadmap for the self-service solutions area</li>
+                                <li>Ran best-practice webinars and demos for prospective clients alongside Sales and Marketing</li>
+                                <li>Analyzed product usage data to improve engagement and convert free-trial accounts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Curinos -->
+            <div class="exp-item">
+                <div class="exp-spine"><div class="exp-dot"></div><div class="exp-wire"></div></div>
+                <div class="exp-body">
+                    <div class="exp-co">Curinos Inc. (formerly Novantas) <small>| New York, NY</small></div>
+                    <div class="roles">
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Data / Client Services Manager</span>
+                                <span class="role-dates">Jul 2020 – Apr 2021</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Collaborated with cross-functional engineering and product teams on continued platform enhancements</li>
+                                <li>Trained and managed a team of analysts through 10+ new client installations</li>
+                                <li>Supervised 4 analysts across 27 client accounts via Asana project management</li>
+                                <li>Conducted daily SQL code reviews before deployment to client-facing production databases</li>
+                            </ul>
+                        </div>
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Senior Data & Configurations Analyst</span>
+                                <span class="role-dates">Apr 2019 – Jun 2020</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Developed an ETL framework to migrate data from SQL Server to a Big Data Server</li>
+                                <li>Architected automated T-SQL procedures reducing processing time from weeks to hours</li>
+                            </ul>
+                        </div>
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Data & Configurations Analyst II</span>
+                                <span class="role-dates">Nov 2017 – Mar 2019</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Configured T-SQL functions, views, stored procedures, and batch jobs across 10 client databases</li>
+                                <li>Built Tableau dashboards to support client decision-making workflows</li>
+                            </ul>
+                        </div>
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Data & Configurations Analyst I</span>
+                                <span class="role-dates">Aug 2016 – Oct 2017</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Maintained PriceTek Deposits platforms and databases for 5 legacy clients</li>
+                                <li>Analyzed datasets with millions of records using T-SQL and PL/SQL</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accenture -->
+            <div class="exp-item">
+                <div class="exp-spine"><div class="exp-dot"></div><div class="exp-wire"></div></div>
+                <div class="exp-body">
+                    <div class="exp-co">Accenture PLC <small>| New York, NY</small></div>
+                    <div class="roles">
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Website Redesign — UI Business Systems Analyst</span>
+                                <span class="role-dates">Mar 2015 – May 2016</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Defined information architecture for UI components across 4 scrum teams from user stories and wireframes</li>
+                                <li>Collaborated with developers and product owners to recommend feature strategies and solutions</li>
+                            </ul>
+                        </div>
+                        <div class="role">
+                            <div class="role-hd">
+                                <span class="role-title">Marketing Execution — Data and Taxonomy Analyst</span>
+                                <span class="role-dates">Aug 2014 – Feb 2015</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Created a standardized marketing taxonomy across 5 lines of business — achieved &gt;33% field reduction</li>
+                                <li>Led workshops and client-facing meetings with VPs and managers to drive consolidation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section id="education">
+        <div class="sec-head fi">
+            <span class="sec-cmd"><span class="c">cat</span> <span class="a">education.txt</span></span>
+            <div class="sec-line"></div>
+        </div>
+        <div class="edu-card fi d1">
+            <div>
+                <div class="edu-school">University of Wisconsin – Madison</div>
+                <div class="edu-deg">M.S. &amp; B.S. — Industrial &amp; Systems Engineering</div>
+            </div>
+            <div class="edu-yr">May 2014</div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <div class="sec-head fi">
+            <span class="sec-cmd"><span class="c">./reach_out</span> <span class="a">--help</span></span>
+            <div class="sec-line"></div>
+        </div>
+        <div class="contact-grid fi d1">
+            <a href="mailto:A.Rolnik321@Gmail.com" class="contact-card">
+                <div class="contact-ico">✉</div>
+                <div class="contact-label">Email</div>
+                <div class="contact-val">A.Rolnik321@Gmail.com</div>
+            </a>
+            <a href="tel:9737239952" class="contact-card">
+                <div class="contact-ico">📱</div>
+                <div class="contact-label">Phone</div>
+                <div class="contact-val">(973) 723-9952</div>
+            </a>
+            <div class="contact-card">
+                <div class="contact-ico">📍</div>
+                <div class="contact-label">Location</div>
+                <div class="contact-val">New York, NY</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>alex<b>@</b>rolnik &nbsp;~&nbsp; new york &nbsp;·&nbsp; built with <b>♥</b></p>
+</footer>
+
+<script>
+// ── Terminal animation ──────────────────────────────────────────────────────
+const tb = document.getElementById('tb');
+
+function el(tag, cls, html) {
+    const e = document.createElement(tag);
+    if (cls)  e.className = cls;
+    if (html) e.innerHTML = html;
+    return e;
+}
+
+function prompt(cmd) {
+    const d = el('div', 'prompt-line');
+    d.innerHTML =
+        `<span class="p-user">alex</span>` +
+        `<span class="p-at">@</span>` +
+        `<span class="p-host">portfolio</span>` +
+        `<span class="p-at">:</span>` +
+        `<span class="p-path">~</span>` +
+        `<span class="p-sym"> $</span>` +
+        `<span class="p-cmd">${cmd}</span>`;
+    tb.appendChild(d);
+}
+
+function out(html, cls) {
+    const d = el('div', cls ? `out ${cls}` : 'out');
+    d.innerHTML = html;
+    tb.appendChild(d);
+    return d;
+}
+
+function blankLine() { tb.appendChild(el('div', 'out')); }
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function appendCursor() {
+    const d = el('div', 'prompt-line');
+    d.innerHTML =
+        `<span class="p-user">alex</span>` +
+        `<span class="p-at">@</span>` +
+        `<span class="p-host">portfolio</span>` +
+        `<span class="p-at">:</span>` +
+        `<span class="p-path">~</span>` +
+        `<span class="p-sym"> $&nbsp;</span>` +
+        `<span class="cursor"></span>`;
+    tb.appendChild(d);
+}
+
+async function animate() {
+    document.getElementById('skipBtn').style.display = 'block';
+
+    prompt('whoami');
+    await wait(550);
+    out('alex rolnik', 'hi');
+    blankLine();
+
+    await wait(350);
+    prompt('cat intro.sh');
+    await wait(500);
+    out('<span style="color:var(--green)">#!/bin/zsh</span>');
+    await wait(140);
+    out('# Senior Solutions Architect — Komodo Health, Inc.');
+    await wait(140);
+    out('# Building AI tools · Architecting data · New York, NY');
+    blankLine();
+
+    await wait(450);
+    prompt('./hello.sh');
+    await wait(700);
+
+    out('Alex Rolnik', 'big');
+    await wait(250);
+    out('Senior Solutions Architect', 'cy');
+    await wait(180);
+    out('Komodo Health, Inc. &nbsp;·&nbsp; New York, NY');
+    blankLine();
+
+    document.getElementById('skipBtn').style.display = 'none';
+    appendCursor();
+    await wait(900);
+    document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function skip() {
+    tb.innerHTML = '';
+    prompt('whoami');
+    out('alex rolnik', 'hi');
+    blankLine();
+    prompt('./hello.sh');
+    out('Alex Rolnik', 'big');
+    out('Senior Solutions Architect', 'cy');
+    out('Komodo Health, Inc. &nbsp;·&nbsp; New York, NY');
+    blankLine();
+    appendCursor();
+    document.getElementById('skipBtn').style.display = 'none';
+    setTimeout(() => {
+        document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 400);
+}
+
+// ── Scroll fade-in ──────────────────────────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+// ── Boot ────────────────────────────────────────────────────────────────────
+window.addEventListener('load', animate);
+</script>
+
+</body>
+</html>
