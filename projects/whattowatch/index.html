@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatToWatch — tvOS Portfolio Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+        :root {
+            --bg-deep: #050507;
+            --bg-surface: #0e0e12;
+            --bg-elevated: #18181f;
+            --border: rgba(255,255,255,0.06);
+            --text-primary: #f0f0f2;
+            --text-secondary: rgba(240,240,242,0.55);
+            --text-tertiary: rgba(240,240,242,0.3);
+            --accent-red: #e3121a;
+            --accent-green: #1cd16b;
+            --accent-cyan: #00a8e0;
+            --accent-blue: #0061f7;
+            --accent-navy: #112d73;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+        }
+
+        .nav { position:sticky; top:0; z-index:50; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(5,5,7,0.75); border-bottom:1px solid var(--border); }
+        .nav-inner { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; max-width:1160px; margin:0 auto; }
+        .nav-left { display:flex; align-items:center; gap:20px; }
+        .nav-back { font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-tertiary); text-decoration:none; letter-spacing:0.5px; transition:color 0.2s ease; }
+        .nav-back:hover { color:var(--accent-cyan); }
+        .nav-brand { font-family:'Instrument Serif',serif; font-size:18px; color:var(--text-primary); letter-spacing:-0.5px; }
+        .nav-links { display:flex; gap:24px; font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; }
+        .nav-links a { color:var(--text-tertiary); text-decoration:none; transition:color 0.2s ease; }
+        .nav-links a:hover { color:var(--text-primary); }
+        @media (max-width:720px) { .nav-links { display:none; } }
+
+        html { scroll-behavior:smooth }
+        body { font-family:'DM Sans',sans-serif; background:var(--bg-deep); color:var(--text-primary); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+        .container { max-width:1160px; margin:0 auto; padding:0 40px; }
+
+        .hero { padding:80px 0 100px; position:relative; overflow:hidden; }
+        .hero::before { content:''; position:absolute; top:-200px; right:-300px; width:800px; height:800px; background:radial-gradient(circle,rgba(227,18,26,0.06) 0%,transparent 70%); pointer-events:none; }
+        .hero::after { content:''; position:absolute; bottom:-100px; left:-200px; width:600px; height:600px; background:radial-gradient(circle,rgba(0,168,224,0.04) 0%,transparent 70%); pointer-events:none; }
+        .hero-eyebrow { font-size:11px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:20px; }
+        .hero h1 { font-family:'Instrument Serif',serif; font-size:clamp(56px,7vw,88px); font-weight:400; line-height:1.0; letter-spacing:-1.5px; margin-bottom:24px; }
+        .hero h1 em { font-style:italic; color:var(--accent-cyan); }
+        .hero-tagline { font-size:19px; color:var(--text-secondary); max-width:580px; line-height:1.65; margin-bottom:48px; }
+        .hero-stats { display:flex; gap:48px; }
+        .stat { display:flex; flex-direction:column; gap:4px; }
+        .stat-value { font-size:28px; font-weight:700; letter-spacing:-0.5px; }
+        .stat-label { font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; color:var(--text-tertiary); }
+
+        section { padding:80px 0; }
+        .section-label { font-size:11px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:12px; }
+        .section-title { font-family:'Instrument Serif',serif; font-size:clamp(32px,4vw,44px); font-weight:400; line-height:1.15; margin-bottom:16px; }
+        .section-subtitle { font-size:16px; color:var(--text-secondary); max-width:560px; margin-bottom:48px; }
+
+        .walkthrough-grid { display:grid; gap:32px; }
+        .screen-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; transition:border-color 0.3s ease; }
+        .screen-card:hover { border-color:rgba(255,255,255,0.12); }
+        .screen-frame { background:var(--bg-elevated); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+        .screen-info { padding:24px 28px; }
+        .screen-info h3 { font-size:17px; font-weight:600; margin-bottom:8px; }
+        .screen-info p { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+        .screen-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+        .screen-tag { font-size:11px; font-weight:500; letter-spacing:0.3px; padding:4px 10px; border-radius:100px; background:rgba(255,255,255,0.05); color:var(--text-secondary); }
+        .walkthrough-pair { display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+        @media (max-width:800px) { .walkthrough-pair { grid-template-columns:1fr; } }
+
+        .tech-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+        .tech-card { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px 22px; transition:border-color 0.3s ease,transform 0.2s ease; }
+        .tech-card:hover { border-color:rgba(255,255,255,0.1); transform:translateY(-2px); }
+        .tech-card-name { font-size:15px; font-weight:600; margin-bottom:4px; }
+        .tech-card-role { font-size:12px; color:var(--text-tertiary); }
+        .tech-category { margin-bottom:32px; }
+        .tech-category-label { font-size:12px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:14px; padding-left:2px; }
+
+        .arch-diagrams { display:grid; gap:40px; }
+        .arch-block { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:36px 32px; }
+        .arch-block h3 { font-size:15px; font-weight:600; margin-bottom:28px; letter-spacing:0.2px; }
+        .arch-flow { display:flex; align-items:center; gap:0; flex-wrap:wrap; justify-content:center; }
+        .arch-node { background:var(--bg-elevated); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-sm); padding:14px 20px; text-align:center; min-width:120px; }
+        .arch-node-label { font-size:13px; font-weight:600; margin-bottom:2px; }
+        .arch-node-detail { font-size:11px; color:var(--text-tertiary); }
+        .arch-arrow { color:var(--text-tertiary); font-size:18px; padding:0 12px; user-select:none; }
+        .arch-node.highlight { border-color:rgba(0,168,224,0.3); background:rgba(0,168,224,0.05); }
+
+        .highlights-list { list-style:none; display:grid; gap:18px; max-width:720px; }
+        .highlights-list li { display:flex; align-items:flex-start; gap:14px; font-size:15px; line-height:1.55; color:var(--text-secondary); }
+        .highlights-list li::before { content:''; flex-shrink:0; width:6px; height:6px; margin-top:9px; border-radius:50%; background:var(--accent-cyan); }
+        .highlights-list li strong { color:var(--text-primary); font-weight:500; }
+
+        .footer { padding:60px 0; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .footer-left { font-size:13px; color:var(--text-tertiary); }
+        .footer-link { color:var(--text-secondary); text-decoration:none; font-size:13px; font-weight:500; transition:color 0.2s ease; }
+        .footer-link:hover { color:var(--text-primary); }
+        .divider { height:1px; background:var(--border); margin:0; }
+    </style>
+</head>
+<body>
+    <nav class="nav"><div class="nav-inner"><div class="nav-left"><a href="/#projects" class="nav-back">&larr; alex@rolnik</a><span class="nav-brand">WhatToWatch</span></div><div class="nav-links"><a href="#walkthrough">Screens</a><a href="#tech">Stack</a><a href="#architecture">Architecture</a><a href="#highlights">Highlights</a></div></div></nav>
+
+    <header class="hero" id="top"><div class="container">
+        <p class="hero-eyebrow">tvOS &middot; SwiftUI &middot; Full-Stack</p>
+        <h1>What<em>To</em>Watch</h1>
+        <p class="hero-tagline">A native Apple TV app that aggregates trending, top-ranked, and newly added titles across every major streaming platform into a single, focus-driven interface.</p>
+        <div class="hero-stats"><div class="stat"><span class="stat-value">8</span><span class="stat-label">Platforms</span></div><div class="stat"><span class="stat-value">3</span><span class="stat-label">Content Categories</span></div><div class="stat"><span class="stat-value">Nightly</span><span class="stat-label">Pipeline Cadence</span></div><div class="stat"><span class="stat-value">0</span><span class="stat-label">3rd-Party Swift Deps</span></div></div>
+    </div></header>
+
+    <div class="container"><hr class="divider"></div>
+
+    <section id="walkthrough"><div class="container">
+        <p class="section-label">App Walkthrough</p>
+        <h2 class="section-title">Five screens, one experience</h2>
+        <p class="section-subtitle">Each screen is purpose-built for the 10-foot UI with full Siri Remote focus navigation, horizontal carousels, and cinematic detail layouts.</p>
+        <div class="walkthrough-grid">
+            <div class="screen-card featured"><div class="screen-frame"><img src="screens/Discover.png" alt="Discover screen" style="width:100%;height:100%;object-fit:cover;"></div><div class="screen-info"><h3>Discover</h3><p>Full-bleed hero card featuring the #1 ranked title, followed by horizontal carousels for Top 10, Trending, and Newly Added. Per-platform rows surface content grouped by service.</p><div class="screen-tags"><span class="screen-tag">Hero Card</span><span class="screen-tag">Carousels</span><span class="screen-tag">async let parallelism</span><span class="screen-tag">Focus Sections</span></div></div></div>
+            <div class="walkthrough-pair">
+                <div class="screen-card"><div class="screen-frame"><img src="screens/browse.png" alt="Browse screen" style="width:100%;height:100%;object-fit:cover;"></div><div class="screen-info"><h3>Browse</h3><p>Material-backed sidebar with platform, category, type, RT score threshold, and genre filters. Results render in an adaptive LazyVGrid of poster cards.</p><div class="screen-tags"><span class="screen-tag">Sidebar Filters</span><span class="screen-tag">LazyVGrid</span><span class="screen-tag">In-memory filtering</span></div></div></div>
+                <div class="screen-card"><div class="screen-frame"><img src="screens/details.png" alt="Detail screen" style="width:100%;height:100%;object-fit:cover;"></div><div class="screen-info"><h3>Detail</h3><p>Cinematic layout with a blurred poster backdrop, two-column design (poster + metadata), RT scores with traffic-light coloring, and a SwiftData-powered Save button.</p><div class="screen-tags"><span class="screen-tag">Blurred Backdrop</span><span class="screen-tag">SwiftData</span><span class="screen-tag">Platform Badges</span></div></div></div>
+            </div>
+            <div class="walkthrough-pair">
+                <div class="screen-card"><div class="screen-frame"><img src="screens/saved.png" alt="Saved screen" style="width:100%;height:100%;object-fit:cover;"></div><div class="screen-info"><h3>Saved</h3><p>Personal watchlist persisted with SwiftData. Scores refresh from the network on appear. Context menu allows removal. Cards show RT overlays and platform badges.</p><div class="screen-tags"><span class="screen-tag">SwiftData @Query</span><span class="screen-tag">Background Refresh</span><span class="screen-tag">Context Menu</span></div></div></div>
+                <div class="screen-card"><div class="screen-frame"><img src="screens/topshelf.png" alt="Top Shelf" style="width:100%;height:100%;object-fit:cover;"></div><div class="screen-info"><h3>Top Shelf</h3><p>TVServices extension surfaces trending titles as a system carousel directly on the Apple TV home screen. Deep links open specific titles within the app.</p><div class="screen-tags"><span class="screen-tag">TVTopShelfCarouselContent</span><span class="screen-tag">Deep Links</span><span class="screen-tag">TVServices</span></div></div></div>
+            </div>
+        </div>
+    </div></section>
+
+    <div class="container"><hr class="divider"></div>
+
+    <section id="tech"><div class="container">
+        <p class="section-label">Technology</p>
+        <h2 class="section-title">Built with Apple-first principles</h2>
+        <p class="section-subtitle">Zero third-party Swift dependencies. Every layer uses first-party Apple frameworks or purpose-built backend tooling.</p>
+        <div class="tech-category"><p class="tech-category-label">tvOS Client</p><div class="tech-grid"><div class="tech-card"><div class="tech-card-name">SwiftUI</div><div class="tech-card-role">UI framework, focus system, navigation</div></div><div class="tech-card"><div class="tech-card-name">SwiftData</div><div class="tech-card-role">Local persistence for watchlist</div></div><div class="tech-card"><div class="tech-card-name">Swift Concurrency</div><div class="tech-card-role">Actors, async let, structured tasks</div></div><div class="tech-card"><div class="tech-card-name">TVServices</div><div class="tech-card-role">Top Shelf extension + deep links</div></div><div class="tech-card"><div class="tech-card-name">@Observable</div><div class="tech-card-role">State management without Combine</div></div></div></div>
+        <div class="tech-category"><p class="tech-category-label">Data Pipeline (Python)</p><div class="tech-grid"><div class="tech-card"><div class="tech-card-name">asyncio + httpx</div><div class="tech-card-role">Async HTTP/2 API fetches</div></div><div class="tech-card"><div class="tech-card-name">Playwright</div><div class="tech-card-role">Headless Chromium scrapers</div></div><div class="tech-card"><div class="tech-card-name">BeautifulSoup</div><div class="tech-card-role">HTML parsing for RT scores</div></div><div class="tech-card"><div class="tech-card-name">TMDB / Watchmode / OMDb</div><div class="tech-card-role">Content metadata APIs</div></div></div></div>
+        <div class="tech-category"><p class="tech-category-label">Infrastructure</p><div class="tech-grid"><div class="tech-card"><div class="tech-card-name">Supabase</div><div class="tech-card-role">PostgreSQL + PostgREST + RLS</div></div><div class="tech-card"><div class="tech-card-name">GitHub Actions</div><div class="tech-card-role">Nightly scheduled CI pipeline</div></div></div></div>
+    </div></section>
+
+    <div class="container"><hr class="divider"></div>
+
+    <section id="architecture"><div class="container">
+        <p class="section-label">Architecture</p>
+        <h2 class="section-title">End-to-end data flow</h2>
+        <p class="section-subtitle">From API sources through enrichment to the Apple TV screen &mdash; two pipelines, one unified experience.</p>
+        <div class="arch-diagrams">
+            <div class="arch-block"><h3>Client Architecture</h3><div class="arch-flow"><div class="arch-node"><div class="arch-node-label">SwiftUI Views</div><div class="arch-node-detail">TabView + NavigationStack</div></div><span class="arch-arrow">&rarr;</span><div class="arch-node highlight"><div class="arch-node-label">DataCoordinator</div><div class="arch-node-detail">@Observable</div></div><span class="arch-arrow">&rarr;</span><div class="arch-node highlight"><div class="arch-node-label">SupabaseClient</div><div class="arch-node-detail">actor isolation</div></div><span class="arch-arrow">&rarr;</span><div class="arch-node"><div class="arch-node-label">Supabase REST</div><div class="arch-node-detail">PostgREST API</div></div></div></div>
+            <div class="arch-block"><h3>Data Pipeline (Nightly)</h3><div class="arch-flow"><div class="arch-node"><div class="arch-node-label">Sources</div><div class="arch-node-detail">TMDB, Watchmode, Scrapers</div></div><span class="arch-arrow">&rarr;</span><div class="arch-node highlight"><div class="arch-node-label">Enrichment</div><div class="arch-node-detail">OMDb + RT Scraper</div></div><span class="arch-arrow">&rarr;</span><div class="arch-node highlight"><div class="arch-node-label">Batched Upsert</div><div class="arch-node-detail">Dedup by (title, platform, category)</div></div><span class="arch-arrow">&rarr;</span><div class="arch-node"><div class="arch-node-label">Cleanup</div><div class="arch-node-detail">Stale rows &gt; 30 days</div></div></div></div>
+        </div>
+    </div></section>
+
+    <div class="container"><hr class="divider"></div>
+
+    <section id="highlights"><div class="container">
+        <p class="section-label">Highlights</p>
+        <h2 class="section-title">What makes this interesting</h2>
+        <ul class="highlights-list">
+            <li><strong>Zero third-party Swift dependencies</strong> &mdash; networking, state management, and persistence all built with first-party Apple frameworks (URLSession, @Observable, SwiftData)</li>
+            <li><strong>Actor-isolated networking</strong> &mdash; SupabaseClient uses Swift&rsquo;s actor model to guarantee thread-safe HTTP access without manual locking</li>
+            <li><strong>Parallel structured concurrency</strong> &mdash; async let loads Top 10, Trending, and Newly Added categories simultaneously on launch</li>
+            <li><strong>SwiftData persistence</strong> &mdash; user&rsquo;s watchlist stored locally with @Model and @Query, background metadata refresh on appear</li>
+            <li><strong>Top Shelf extension</strong> &mdash; TVServices carousel surfaces trending content on the Apple TV home screen with deep-link navigation into the app</li>
+            <li><strong>Batched upserts with deduplication</strong> &mdash; unique constraint on (title, platform, category) prevents duplicates; 50-row batch writes for throughput</li>
+            <li><strong>Multi-source enrichment</strong> &mdash; OMDb for primary RT scores, Playwright headless scraper as fallback, ensuring high data coverage</li>
+            <li><strong>Nightly CI/CD pipeline</strong> &mdash; GitHub Actions cron job provisions Chromium, runs the full pipeline, and refreshes the catalog automatically</li>
+        </ul>
+    </div></section>
+
+    <footer><div class="container"><div class="footer"><span class="footer-left">Alex Rolnik &middot; 2026</span><a href="/#projects" class="footer-link">&larr; Back to portfolio</a></div></div></footer>
+</body>
+</html>
