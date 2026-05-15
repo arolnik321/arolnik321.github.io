@@ -335,6 +335,50 @@
             color: var(--green); font-size: 0.68rem; top: 0.06em;
         }
 
+        /* ── PROJECTS ────────────────────────────────────────── */
+        .proj-subsec {
+            font-size: 0.68rem; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 0.8rem; padding-left: 2px;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .proj-subsec::after {
+            content: ''; flex: 0 0 32px; height: 1px; background: var(--border);
+        }
+        .proj-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 0.85rem; margin-bottom: 1.75rem;
+        }
+        .proj-card {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.05rem 1.2rem;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+            display: flex; flex-direction: column; gap: 0.6rem;
+        }
+        .proj-card:hover {
+            border-color: var(--green);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 32px rgba(63,185,80,0.12), 0 0 0 1px rgba(63,185,80,0.1);
+        }
+        .proj-card-hd {
+            display: flex; justify-content: space-between;
+            align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
+        }
+        .proj-name {
+            font-size: 0.84rem; font-weight: 600; color: var(--cyan);
+        }
+        .proj-badge {
+            font-size: 0.63rem; color: var(--muted);
+            border: 1px solid var(--border); border-radius: 3px;
+            padding: 0.1rem 0.42rem; white-space: nowrap;
+        }
+        .proj-stack { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+        .proj-stack .tag {
+            font-size: 0.65rem; padding: 0.14rem 0.44rem;
+            opacity: 0; transform: translateY(6px) scale(0.88);
+        }
+        .proj-stack .tag.in { opacity: 1; transform: translateY(0) scale(1); }
+
         /* ── EDUCATION ────────────────────────────────────────── */
         .edu-card {
             background: var(--bg2); border: 1px solid var(--border);
@@ -393,6 +437,7 @@
             .stat-grid   { flex-direction: row; flex-wrap: wrap; }
             .stat        { flex: 1; min-width: 110px; }
             .skills-grid { grid-template-columns: 1fr 1fr; }
+            .proj-grid   { grid-template-columns: 1fr; }
             .contact-grid{ grid-template-columns: 1fr; }
             .terminal-body { font-size: 0.8rem; }
             .out.big     { font-size: 1.35rem; }
@@ -408,6 +453,7 @@
         <li><a href="#about">about</a></li>
         <li><a href="#skills">skills</a></li>
         <li><a href="#experience">experience</a></li>
+        <li><a href="#projects">projects</a></li>
         <li><a href="#education">education</a></li>
         <li><a href="#contact">contact</a></li>
     </ul>
@@ -459,8 +505,8 @@
             </div>
             <div class="stat-grid">
                 <div class="stat"><div class="stat-n" data-count="10" data-suffix="+">10+</div><div class="stat-l">years of experience</div></div>
-                <div class="stat"><div class="stat-n" data-count="50" data-suffix="+">50+</div><div class="stat-l">client engagements</div></div>
-                <div class="stat"><div class="stat-n" data-count="3" data-suffix="">3</div><div class="stat-l">AI agents shipped</div></div>
+                <div class="stat"><div class="stat-n" data-count="100" data-suffix="+">100+</div><div class="stat-l">client engagements</div></div>
+                <div class="stat"><div class="stat-n" data-count="5" data-suffix="">5</div><div class="stat-l">AI apps shipped</div></div>
                 <div class="stat"><div class="stat-n" data-count="40" data-suffix="h">40h</div><div class="stat-l">saved per month via automation</div></div>
             </div>
         </div>
@@ -481,41 +527,49 @@
                     <span class="tag">dbt Cloud</span><span class="tag">Tableau</span>
                     <span class="tag">AWS</span><span class="tag">AWS CLI</span>
                     <span class="tag">Datavant</span><span class="tag">SQL Server</span>
-                    <span class="tag">Oracle SQL</span>
+                    <span class="tag">Oracle SQL</span><span class="tag">Supabase</span>
+                    <span class="tag">PostgreSQL</span>
                 </div>
             </div>
             <div class="sk-group">
-                <div class="sk-title">AI & Automation</div>
+                <div class="sk-title">AI / LLM</div>
                 <div class="tags">
-                    <span class="tag">Claude AI</span><span class="tag">LLMs</span>
-                    <span class="tag">Cursor</span><span class="tag">Glean AI</span>
-                    <span class="tag">AI Agents</span><span class="tag">Prompt Eng.</span>
-                    <span class="tag">Python Scripting</span><span class="tag">Workflow Automation</span>
+                    <span class="tag">Claude</span><span class="tag">Claude Code</span>
+                    <span class="tag">Gemini</span><span class="tag">ChatGPT</span>
+                    <span class="tag">Glean AI</span><span class="tag">Cursor</span>
+                    <span class="tag">Antigravity</span><span class="tag">Prompt Engineering</span>
+                    <span class="tag">Agentic Workflows</span><span class="tag">RAG</span>
+                    <span class="tag">MCP</span><span class="tag">Python Scripting</span>
                 </div>
             </div>
             <div class="sk-group">
-                <div class="sk-title">Languages</div>
+                <div class="sk-title">Languages & Frameworks</div>
                 <div class="tags">
                     <span class="tag">SQL</span><span class="tag">Python</span>
-                    <span class="tag">JavaScript</span><span class="tag">Excel VBA</span>
-                    <span class="tag">Google Apps Script</span>
+                    <span class="tag">JavaScript</span><span class="tag">TypeScript</span>
+                    <span class="tag">Excel VBA</span><span class="tag">Google Apps Script</span>
                     <span class="tag">JSON</span><span class="tag">YAML</span>
+                    <span class="tag">FastAPI</span><span class="tag">React</span>
+                    <span class="tag">Swift</span><span class="tag">SwiftUI</span>
+                    <span class="tag">SwiftData</span>
                 </div>
             </div>
             <div class="sk-group">
                 <div class="sk-title">Methodologies</div>
                 <div class="tags">
                     <span class="tag">ELT / ETL</span><span class="tag">REST API</span>
-                    <span class="tag">Data Analytics</span><span class="tag">Agile</span>
-                    <span class="tag">Project Mgmt</span><span class="tag">Product Mgmt</span>
-                    <span class="tag">UI/UX Design</span><span class="tag">UAT</span>
-                    <span class="tag">Product Analytics</span>
+                    <span class="tag">Data Analytics</span><span class="tag">Data Management</span>
+                    <span class="tag">Agile</span><span class="tag">Project Mgmt</span>
+                    <span class="tag">Product Mgmt</span><span class="tag">UI/UX Design</span>
+                    <span class="tag">UAT</span><span class="tag">End User Training</span>
+                    <span class="tag">Product Analytics</span><span class="tag">NPS Surveys</span>
                 </div>
             </div>
             <div class="sk-group">
                 <div class="sk-title">Dev & Collaboration</div>
                 <div class="tags">
-                    <span class="tag">GitHub</span><span class="tag">Postman</span>
+                    <span class="tag">GitHub</span><span class="tag">GitHub Actions</span>
+                    <span class="tag">Kubernetes</span><span class="tag">Postman</span>
                     <span class="tag">JIRA</span><span class="tag">Confluence</span>
                     <span class="tag">Asana</span>
                 </div>
@@ -678,6 +732,136 @@
                 </div>
             </div>
 
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+        <div class="sec-head fi">
+            <span class="sec-cmd"><span class="c">ls</span> <span class="a">-la projects/</span></span>
+            <div class="sec-line"></div>
+        </div>
+
+        <div class="fi d1">
+            <div class="proj-subsec">work · komodo health</div>
+            <div class="proj-grid">
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">Komodo Delivery Platform</span>
+                        <span class="proj-badge">Python · FastAPI · React</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">React</span>
+                        <span class="tag">Glean AI</span><span class="tag">Snowflake</span>
+                        <span class="tag">APScheduler</span><span class="tag">AWS Lambda</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>Architected end-to-end pipeline automating scheduling, QA-gating, and delivery of healthcare data exports for 70+ recurring deliveries — replaced ~2 hrs/delivery manual workflow</li>
+                        <li>Built 3-signal QA engine with Glean AI severity triage enabling unattended overnight delivery; reduced escalation rate ~75%</li>
+                    </ul>
+                </div>
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">Jira Ticket Generator</span>
+                        <span class="proj-badge">LLM · Gemini · Glean AI</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">Python</span><span class="tag">React</span>
+                        <span class="tag">Gemini LLM</span><span class="tag">Glean AI</span>
+                        <span class="tag">Jira REST API</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>LLM-powered tool converting natural-language descriptions to fully populated epic/subtask trees; maps 8+ Jira custom fields automatically</li>
+                        <li>Cut ticket creation from 2 hrs → 2 min; adopted by the full SA team across 45+ engagements</li>
+                    </ul>
+                </div>
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">Export Builder</span>
+                        <span class="proj-badge">Python · React · Kubernetes</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">Python</span><span class="tag">React</span>
+                        <span class="tag">Komodo SDK</span><span class="tag">Kubernetes</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>Self-service app for clients to configure and execute dataset exports to S3/SFTP, replacing one-off engineer scripts</li>
+                        <li>Cut export turnaround from ~7 days → ~1 hour with real-time feedback and zero engineering involvement per run</li>
+                    </ul>
+                </div>
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">Overlap Analysis Builder</span>
+                        <span class="proj-badge">FastAPI · Snowflake · Datavant</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">Python</span><span class="tag">FastAPI</span>
+                        <span class="tag">React</span><span class="tag">Snowflake</span>
+                        <span class="tag">Datavant</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>PHI-safe patient overlap quantification app; reduced ~5-day analyst engagement → ~1-hour self-serve</li>
+                        <li>Added Excel/PDF/PowerPoint report generation enabling SAs to run commercial analyses independently</li>
+                    </ul>
+                </div>
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">DD Builder — Data Dictionary Builder</span>
+                        <span class="proj-badge">Python · React · TypeScript</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">Python</span><span class="tag">React</span>
+                        <span class="tag">TypeScript</span><span class="tag">XLSX config</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>Auto-generated field-level docs replacing hand-maintained per-customer dictionaries</li>
+                        <li>Cut authoring from ~30 min → ~30 sec across 200+ active customers; single source of truth for delivery metadata</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="proj-subsec">personal</div>
+            <div class="proj-grid">
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">MeLift</span>
+                        <span class="proj-badge">iOS · Swift · Supabase</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">Swift</span><span class="tag">SwiftUI</span>
+                        <span class="tag">Supabase</span><span class="tag">PostgreSQL</span>
+                        <span class="tag">Swift Charts</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>Native iOS workout tracker with MVVM, personal records engine, portable .melift JSON sharing format, and Swift Charts analytics</li>
+                        <li>Efficient nested Supabase queries eliminating N+1 patterns; Keychain-persisted auth with full password-reset flow</li>
+                    </ul>
+                </div>
+
+                <div class="proj-card">
+                    <div class="proj-card-hd">
+                        <span class="proj-name">WhatToWatch</span>
+                        <span class="proj-badge">tvOS · SwiftUI · Python</span>
+                    </div>
+                    <div class="proj-stack">
+                        <span class="tag">SwiftUI</span><span class="tag">SwiftData</span>
+                        <span class="tag">Python</span><span class="tag">PostgreSQL</span>
+                        <span class="tag">GitHub Actions</span><span class="tag">Playwright</span>
+                    </div>
+                    <ul class="bullets">
+                        <li>Apple TV streaming aggregator with Top Shelf extension, @Observable, actor isolation, async let parallelism; zero third-party Swift dependencies</li>
+                        <li>Python async pipeline aggregating 4 APIs + headless scrapers via nightly GitHub Actions cron with Playwright/Chromium</li>
+                    </ul>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -905,7 +1089,7 @@ const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
         if (!e.isIntersecting) return;
         e.target.classList.add('vis');
-        const tags = e.target.querySelectorAll('.tag:not(.in)');
+        const tags = e.target.querySelectorAll('.proj-stack .tag:not(.in), .tags .tag:not(.in)');
         tags.forEach((tag, i) => {
             setTimeout(() => tag.classList.add('in'), 180 + i * 45);
         });

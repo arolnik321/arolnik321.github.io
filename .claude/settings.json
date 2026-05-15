@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('child_process');p.execSync('npx puppeteer screenshot index.html --fullpage -o screenshot.png 2>/dev/null || true')\" 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  }
+}
