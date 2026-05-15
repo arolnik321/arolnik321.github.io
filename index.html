@@ -379,6 +379,19 @@
         }
         .proj-stack .tag.in { opacity: 1; transform: translateY(0) scale(1); }
 
+        .proj-card--link {
+            text-decoration: none; color: inherit; cursor: pointer;
+            position: relative;
+        }
+        .proj-cta {
+            margin-top: 0.45rem; font-size: 0.72rem; color: var(--green);
+            letter-spacing: 0.04em; align-self: flex-end;
+            opacity: 0.85; transition: opacity 0.2s, color 0.2s;
+        }
+        .proj-cta-arrow { display: inline-block; transition: transform 0.25s ease; }
+        .proj-card--link:hover .proj-cta { opacity: 1; color: var(--cyan); }
+        .proj-card--link:hover .proj-cta-arrow { transform: translateX(4px); }
+
         /* ── EDUCATION ────────────────────────────────────────── */
         .edu-card {
             background: var(--bg2); border: 1px solid var(--border);
@@ -829,7 +842,7 @@
             <div class="proj-subsec">personal</div>
             <div class="proj-grid">
 
-                <div class="proj-card">
+                <a href="projects/melift/" class="proj-card proj-card--link">
                     <div class="proj-card-hd">
                         <span class="proj-name">MeLift</span>
                         <span class="proj-badge">iOS · Swift · Supabase</span>
@@ -843,7 +856,8 @@
                         <li>Native iOS workout tracker with MVVM, personal records engine, portable .melift JSON sharing format, and Swift Charts analytics</li>
                         <li>Efficient nested Supabase queries eliminating N+1 patterns; Keychain-persisted auth with full password-reset flow</li>
                     </ul>
-                </div>
+                    <span class="proj-cta">view case study <span class="proj-cta-arrow">&rarr;</span></span>
+                </a>
 
                 <div class="proj-card">
                     <div class="proj-card-hd">
