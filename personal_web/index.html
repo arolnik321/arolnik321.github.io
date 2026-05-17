@@ -547,18 +547,62 @@
     .fi.d1  { transition-delay: 0.12s; }
     .fi.d2  { transition-delay: 0.24s; }
 
+    /* ── NAV BURGER ─────────────────────────────────────────── */
+    .nav-burger {
+        display: none;
+        background: transparent; border: 1px solid var(--border);
+        color: var(--muted); font-size: 1.05rem;
+        padding: 0.2rem 0.55rem; cursor: pointer;
+        font-family: inherit; border-radius: 4px;
+        transition: border-color 0.2s, color 0.2s;
+    }
+    .nav-burger:hover { border-color: var(--blue); color: var(--blue); }
+
     /* ── RESPONSIVE ──────────────────────────────────────── */
     @media (max-width: 720px) {
+        /* Nav */
         nav { padding: 0 1rem; }
-        .nav-links a { padding: 0.35rem 0.45rem; font-size: 0.72rem; }
-        .about-grid  { grid-template-columns: 1fr; }
-        .stat-grid   { flex-direction: row; flex-wrap: wrap; }
-        .stat        { flex: 1; min-width: 140px; }
+        .nav-burger { display: flex; align-items: center; }
+        .nav-links {
+            display: none; flex-direction: column;
+            position: absolute; top: 52px; left: 0; right: 0;
+            background: var(--bg2); border-bottom: 1px solid var(--border);
+            padding: 0.5rem 1rem; z-index: 99;
+        }
+        .nav-links.open { display: flex; }
+        .nav-links li { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav-links a { padding: 0.55rem 0; display: block; font-size: 0.85rem; }
+        .nav-links a::before { display: none; }
+
+        /* Section headers */
+        .sec-cmd { font-size: 0.65rem; white-space: normal; line-height: 1.6; }
+        .sec-head { flex-wrap: wrap; align-items: flex-start; margin-bottom: 1.25rem; }
+        .sec-line { display: none; }
+
+        /* About */
+        .about-grid { grid-template-columns: 1fr; }
+        .stat-grid  { flex-direction: row; flex-wrap: wrap; }
+        .stat       { flex: 1; min-width: 130px; overflow: hidden; padding: 0.6rem 0.8rem; }
+        .stat-n     { font-size: 1.1rem; }
+        .stat-l     { font-size: 0.58rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Skills */
         .skills-grid { grid-template-columns: 1fr 1fr; }
-        .proj-grid   { grid-template-columns: 1fr; }
-        .contact-grid{ grid-template-columns: 1fr; }
-        .editor-body { font-size: 0.78rem; }
-        .result-big  { font-size: 1.35rem; }
+        .data-table  { min-width: 480px; }
+
+        /* Gantt */
+        #ganttView { -webkit-overflow-scrolling: touch; }
+        .gantt-header-row { margin-left: 130px; }
+        .gantt-row-label  { width: 130px; font-size: 0.6rem; }
+
+        /* Projects & contact */
+        .proj-grid    { grid-template-columns: 1fr; }
+        .contact-grid { grid-template-columns: 1fr; }
+
+        /* Hero editor */
+        .editor-body { font-size: 0.76rem; }
+        .result-big  { font-size: 1.3rem; }
+        .line-nums   { min-width: 30px; }
     }
 
     /* ── GANTT ───────────────────────────────────────────────── */
@@ -622,14 +666,15 @@
 
 <!-- ── NAV ──────────────────────────────────────────────────────────────── -->
 <nav>
-    <a href="#hero" class="nav-logo"><span class="kw" style="-webkit-text-fill-color:var(--blue)">SELECT</span> <em>alex_rolnik</em></a>
-    <ul class="nav-links">
-        <li><a href="#about">profile</a></li>
-        <li><a href="#skills">skills</a></li>
-        <li><a href="#experience">experience</a></li>
-        <li><a href="#projects">projects</a></li>
-        <li><a href="#education">education</a></li>
-        <li><a href="#contact">contact</a></li>
+    <a href="#hero" class="nav-logo" onclick="document.getElementById('navLinks').classList.remove('open')"><span class="kw" style="-webkit-text-fill-color:var(--blue)">SELECT</span> <em>alex_rolnik</em></a>
+    <button class="nav-burger" id="navBurger" onclick="toggleNav()">☰</button>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#about" onclick="closeNav()">profile</a></li>
+        <li><a href="#skills" onclick="closeNav()">skills</a></li>
+        <li><a href="#experience" onclick="closeNav()">experience</a></li>
+        <li><a href="#projects" onclick="closeNav()">projects</a></li>
+        <li><a href="#education" onclick="closeNav()">education</a></li>
+        <li><a href="#contact" onclick="closeNav()">contact</a></li>
     </ul>
 </nav>
 
@@ -794,8 +839,9 @@
                 <input class="table-search" id="skillSearch" type="text"
                     placeholder="-- filter: python, ai, komodo..."
                     oninput="filterSkills()">
-                <span class="row-count" id="rowCount"></span>
             </div>
+            <span class="row-count" id="rowCount" style="display:block;margin-bottom:0.5rem"></span>
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
             <table class="data-table" id="dataTable">
                 <thead>
                     <tr>
@@ -808,6 +854,7 @@
                 </thead>
                 <tbody id="skillsBody"></tbody>
             </table>
+            </div><!-- /table-scroll -->
             <div id="tableExpand" style="display:none; justify-content:center; padding-top:0.9rem;">
                 <button id="expandBtn" class="expand-btn" onclick="toggleShowAll()"></button>
             </div>
@@ -1545,6 +1592,13 @@ function buildTicker() {
         const el = e.target.closest('[data-href]');
         if (el) { const t = document.querySelector(el.dataset.href); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); }
     });
+}
+
+function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+}
+function closeNav() {
+    document.getElementById('navLinks').classList.remove('open');
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────
