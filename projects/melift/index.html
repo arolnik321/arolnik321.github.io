@@ -1,0 +1,1667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MeLift — Strength training, instrumented.</title>
+  <meta name="description" content="MeLift is a native iOS strength-training app built in SwiftUI, backed by Supabase, with Live Activities, personal-records detection, and Swift Charts analytics." />
+  <meta name="theme-color" content="#1a2e1a" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
+
+  <style>
+    /* ----------------------------------------------------------------
+       Forest theme — pulled directly from MeLift/Theme/ThemeManager.swift
+       ---------------------------------------------------------------- */
+    :root {
+      --bg-0:           #14241a;            /* one shade deeper than app bg */
+      --bg-1:           #1a2e1a;            /* backgroundPrimary */
+      --bg-2:           #243524;            /* backgroundSecondary */
+      --bg-3:           #2e422e;            /* backgroundTertiary */
+      --bg-4:           #38503a;            /* hover / outlines */
+
+      --text-1:         #f5f5f0;            /* textPrimary */
+      --text-2:         #b3bfb3;            /* textSecondary */
+      --text-3:         #7f8c7f;            /* textTertiary */
+      --text-faint:     #38503a;            /* placeholderSubtle */
+
+      --gold:           #d4a439;            /* brandPrimary / accent */
+      --gold-light:     #e8c164;            /* brandSecondary */
+      --gold-deep:      #b08826;
+      --gold-glow:      rgba(212,164,57,0.18);
+
+      --success:        #66b366;
+      --error:          #d94d4d;
+      --warning:        #e6a533;
+      --info:           #6699cc;
+
+      --display:        'Black Ops One', 'Impact', system-ui, sans-serif;
+      --sans:           'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      --mono:           'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+      --radius-sm:      6px;
+      --radius-md:      12px;
+      --radius-lg:      20px;
+      --radius-phone:   38px;
+
+      --shadow-soft:    0 30px 80px -30px rgba(0,0,0,0.6), 0 4px 16px -4px rgba(0,0,0,0.4);
+      --shadow-gold:    0 0 0 1px rgba(212,164,57,0.25), 0 8px 30px -10px rgba(212,164,57,0.18);
+    }
+
+    /* ----------------------------------------------------------------
+       Reset + base
+       ---------------------------------------------------------------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      background: var(--bg-1);
+      color: var(--text-1);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(1200px 800px at 80% -10%, rgba(212,164,57,0.06), transparent 60%),
+        radial-gradient(900px 700px at -10% 30%, rgba(56,80,58,0.45), transparent 55%),
+        linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 40%, var(--bg-1) 100%);
+      background-attachment: fixed;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+    ::selection { background: var(--gold); color: var(--bg-1); }
+
+    /* ----------------------------------------------------------------
+       Typography utilities
+       ---------------------------------------------------------------- */
+    .display { font-family: var(--display); font-weight: 400; letter-spacing: 0.02em; }
+    .mono { font-family: var(--mono); }
+
+    .eyebrow {
+      font-family: var(--display);
+      font-size: 12px;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: var(--gold);
+      display: inline-block;
+    }
+
+    h1, h2, h3 { margin: 0; font-weight: 400; }
+    h1.display { font-size: clamp(48px, 7vw, 92px); line-height: 0.95; }
+    h2.display { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.0; }
+    h3.display { font-size: clamp(20px, 2.4vw, 28px); line-height: 1.1; }
+
+    p { margin: 0 0 1em; color: var(--text-2); }
+    p.lead { font-size: 18px; color: var(--text-1); max-width: 56ch; }
+
+    /* ----------------------------------------------------------------
+       Layout primitives
+       ---------------------------------------------------------------- */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    section {
+      padding: clamp(80px, 10vw, 140px) 0;
+      position: relative;
+    }
+
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--bg-3) 30%, var(--bg-3) 70%, transparent);
+    }
+
+    /* ----------------------------------------------------------------
+       Top nav
+       ---------------------------------------------------------------- */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(20, 36, 26, 0.65);
+      border-bottom: 1px solid rgba(56,80,58,0.5);
+    }
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .nav__brand {
+      font-family: var(--display);
+      font-size: 18px;
+      letter-spacing: 0.18em;
+      color: var(--text-1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav__brand::before {
+      content: "";
+      width: 10px; height: 10px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+    .nav__links {
+      display: flex;
+      gap: 26px;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+    .nav__links a { transition: color 0.2s ease; }
+    .nav__links a:hover { color: var(--gold); }
+    @media (max-width: 720px) { .nav__links { display: none; } }
+
+    .nav__left {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+    .nav__back {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-3);
+      letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+    .nav__back:hover { color: var(--gold); }
+    @media (max-width: 720px) {
+      .nav__left { gap: 14px; }
+      .nav__back { font-size: 11px; }
+    }
+
+    /* ----------------------------------------------------------------
+       Hero
+       ---------------------------------------------------------------- */
+    .hero {
+      padding-top: clamp(60px, 8vw, 100px);
+      padding-bottom: clamp(60px, 8vw, 120px);
+      overflow: hidden;
+    }
+    .hero__grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 60px;
+      align-items: center;
+    }
+    @media (max-width: 980px) {
+      .hero__grid { grid-template-columns: 1fr; gap: 60px; }
+    }
+
+    .hero__title {
+      margin-top: 28px;
+      margin-bottom: 22px;
+    }
+    .hero__title .accent { color: var(--gold); }
+    .hero__rule {
+      width: 80px;
+      height: 3px;
+      background: var(--gold);
+      margin: 28px 0;
+    }
+    .hero__sub {
+      font-family: var(--display);
+      font-size: clamp(16px, 1.6vw, 20px);
+      letter-spacing: 0.16em;
+      color: var(--text-1);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .hero__copy { max-width: 52ch; color: var(--text-2); font-size: 17px; }
+
+    .cta-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border-radius: 4px;
+      font-family: var(--display);
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--primary {
+      background: var(--gold);
+      color: var(--bg-1);
+      box-shadow: var(--shadow-gold);
+    }
+    .btn--primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn--ghost {
+      color: var(--text-1);
+      border: 1px solid var(--bg-4);
+      background: rgba(36,53,36,0.4);
+    }
+    .btn--ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .btn .arrow { transition: transform 0.2s ease; }
+    .btn:hover .arrow { transform: translateX(3px); }
+
+    .hero__meta {
+      display: flex;
+      gap: 28px;
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px dashed var(--bg-4);
+      flex-wrap: wrap;
+    }
+    .hero__meta div { display: flex; flex-direction: column; gap: 4px; }
+    .hero__meta .k {
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+    .hero__meta .v { font-size: 14px; color: var(--text-1); }
+
+    /* Hero phone wrapper with call-outs */
+    .hero__phone-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 620px;
+    }
+    .hero__phone-wrap .phone-shot,
+    .hero__phone-wrap .phone {
+      transform: rotate(-2deg);
+    }
+    .hero__phone-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 5% 10%;
+      background: radial-gradient(closest-side, var(--gold-glow), transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hero__phone-wrap > * { position: relative; z-index: 1; }
+
+    .callout {
+      position: absolute;
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-transform: uppercase;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .callout::before {
+      content: "";
+      width: 60px; height: 1px;
+      background: var(--gold);
+    }
+    .callout--right { flex-direction: row-reverse; }
+    .callout--right::before { background: var(--gold); }
+    .callout--top    { top: 8%;  right: -10px; }
+    .callout--mid    { top: 46%; left: -40px; }
+    .callout--bot    { bottom: 12%; right: -20px; }
+    @media (max-width: 980px) {
+      .callout { display: none; }
+      .hero__phone-wrap .phone { transform: none; }
+    }
+
+    /* ----------------------------------------------------------------
+       Phone — screenshot variant (real captures from the app)
+       ---------------------------------------------------------------- */
+    .phone-shot {
+      position: relative;
+      width: 320px;
+      background: linear-gradient(160deg, #0c1610 0%, #131f15 60%, #0a120c 100%);
+      border-radius: var(--radius-phone);
+      padding: 10px;
+      box-shadow:
+        0 0 0 1.5px #000,
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        var(--shadow-soft);
+    }
+    .phone-shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 30px;
+      background: var(--bg-1);
+    }
+    .phone-shot--lg { width: 360px; }
+
+    /* Two-phone composition for the Progress feature */
+    .phone-pair {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+      min-height: 660px;
+    }
+    .phone-pair .phone-shot { width: 230px; }
+    .phone-pair .phone-shot:nth-child(1) {
+      transform: rotate(-4deg) translate(20px, 0);
+      z-index: 1;
+    }
+    .phone-pair .phone-shot:nth-child(2) {
+      transform: rotate(4deg) translate(-20px, 30px);
+      z-index: 2;
+    }
+    @media (max-width: 600px) {
+      .phone-pair .phone-shot { width: 200px; }
+      .phone-pair .phone-shot:nth-child(1) { transform: rotate(-3deg) translate(10px, 0); }
+      .phone-pair .phone-shot:nth-child(2) { transform: rotate(3deg) translate(-10px, 20px); }
+    }
+
+    /* ----------------------------------------------------------------
+       Phone mockup (legacy CSS-only version, kept for the Live Activity lockscreen)
+       ---------------------------------------------------------------- */
+    .phone {
+      position: relative;
+      width: 320px;
+      height: 660px;
+      background: linear-gradient(160deg, #0c1610 0%, #131f15 60%, #0a120c 100%);
+      border-radius: var(--radius-phone);
+      padding: 12px;
+      box-shadow:
+        0 0 0 1.5px #000,
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        var(--shadow-soft);
+    }
+    .phone__screen {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: 28px;
+      background: var(--bg-1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone__island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 30px;
+      background: #000;
+      border-radius: 18px;
+      z-index: 5;
+    }
+    .phone__statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 22px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-1);
+      letter-spacing: 0.02em;
+    }
+    .phone__statusbar .right {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .phone__statusbar svg { width: 16px; height: 11px; fill: var(--text-1); }
+
+    .phone__body {
+      flex: 1;
+      padding: 56px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .phone__header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .phone__header .title {
+      font-family: var(--display);
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      color: var(--text-1);
+    }
+    .phone__header .subtitle {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+
+    /* --- shared screen tokens --- */
+    .scr-card {
+      background: var(--bg-2);
+      border: 1px solid rgba(56,80,58,0.6);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+    .scr-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .scr-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(212,164,57,0.12);
+      color: var(--gold);
+      font-family: var(--display);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* ----------------------------------------------------------------
+       Screen — Active Workout
+       ---------------------------------------------------------------- */
+    .scr-active .ex-name {
+      font-family: var(--display);
+      letter-spacing: 0.04em;
+      font-size: 14px;
+      color: var(--text-1);
+    }
+    .scr-active .ex-meta {
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+    }
+    .scr-active .set-row {
+      display: grid;
+      grid-template-columns: 24px 1fr 1fr 22px;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-top: 1px solid rgba(56,80,58,0.5);
+      font-size: 13px;
+    }
+    .scr-active .set-row:first-of-type { border-top: 0; }
+    .scr-active .set-row .num {
+      font-family: var(--display);
+      color: var(--text-3);
+      font-size: 12px;
+      text-align: center;
+    }
+    .scr-active .set-row .val {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-1);
+      letter-spacing: 0.02em;
+    }
+    .scr-active .set-row .val small {
+      color: var(--text-3);
+      margin-left: 4px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+    .scr-active .set-row .check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--bg-4);
+      display: grid;
+      place-items: center;
+    }
+    .scr-active .set-row.done .check {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+    .scr-active .set-row.done .check::after {
+      content: "";
+      width: 9px; height: 5px;
+      border-left: 2px solid var(--bg-1);
+      border-bottom: 2px solid var(--bg-1);
+      transform: rotate(-45deg) translate(0, -2px);
+    }
+    .scr-active .pr-set { color: var(--gold-light); }
+    .scr-active .pr-tag {
+      font-family: var(--display);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--bg-1);
+      background: var(--gold);
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .scr-active .add-set {
+      margin-top: 8px;
+      padding: 10px;
+      border: 1px dashed var(--bg-4);
+      border-radius: 10px;
+      text-align: center;
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+
+    .rest-pill {
+      margin-top: auto;
+      align-self: stretch;
+      background: linear-gradient(135deg, rgba(212,164,57,0.18), rgba(212,164,57,0.08));
+      border: 1px solid rgba(212,164,57,0.45);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .rest-pill .label {
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .rest-pill .time {
+      font-family: var(--mono);
+      font-size: 22px;
+      color: var(--text-1);
+      letter-spacing: 0.04em;
+    }
+    .rest-pill .ring {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(212,164,57,0.3);
+      border-top-color: var(--gold);
+      animation: spin 2.4s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* tab bar */
+    .tabbar {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 12px 14px;
+      border-top: 1px solid rgba(56,80,58,0.6);
+      background: rgba(20,36,26,0.6);
+    }
+    .tabbar .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      color: var(--text-3);
+      text-transform: uppercase;
+      font-family: var(--display);
+    }
+    .tabbar .tab.active { color: var(--gold); }
+    .tabbar .tab .dot {
+      width: 16px; height: 16px; border-radius: 4px;
+      background: currentColor;
+      opacity: 0.85;
+    }
+
+    /* ----------------------------------------------------------------
+       Screen — Progress / Volume Chart
+       ---------------------------------------------------------------- */
+    .scr-progress .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-tile { padding: 12px; }
+    .stat-tile .k {
+      font-family: var(--display);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+    .stat-tile .v {
+      font-family: var(--display);
+      font-size: 22px;
+      color: var(--gold-light);
+      letter-spacing: 0.02em;
+      margin-top: 4px;
+    }
+    .stat-tile .v small { color: var(--text-3); font-size: 11px; margin-left: 4px; letter-spacing: 0; font-family: var(--sans); }
+    .stat-tile .delta { font-size: 11px; color: var(--success); margin-top: 2px; }
+
+    .period-toggle {
+      display: flex;
+      background: var(--bg-2);
+      border-radius: 10px;
+      padding: 3px;
+      border: 1px solid rgba(56,80,58,0.6);
+    }
+    .period-toggle span {
+      flex: 1;
+      text-align: center;
+      padding: 6px 0;
+      font-family: var(--display);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--text-3);
+      border-radius: 7px;
+    }
+    .period-toggle span.active {
+      background: var(--gold);
+      color: var(--bg-1);
+    }
+
+    .chart-card {
+      flex: 1;
+      padding: 14px 12px 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-card .chart-title {
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: var(--text-2);
+      text-transform: uppercase;
+    }
+    .chart-card svg { width: 100%; height: auto; flex: 1; margin-top: 8px; }
+
+    /* ----------------------------------------------------------------
+       Screen — PRs
+       ---------------------------------------------------------------- */
+    .scr-prs .pr-card {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .scr-prs .pr-card .icon {
+      width: 36px; height: 36px;
+      background: rgba(212,164,57,0.12);
+      border: 1px solid rgba(212,164,57,0.4);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-family: var(--display);
+      color: var(--gold);
+      font-size: 16px;
+    }
+    .scr-prs .pr-card .info { flex: 1; min-width: 0; }
+    .scr-prs .pr-card .name {
+      font-family: var(--display);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--text-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .scr-prs .pr-card .date { font-size: 10px; color: var(--text-3); letter-spacing: 0.08em; margin-top: 2px; }
+    .scr-prs .pr-card .val {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--gold-light);
+    }
+    .scr-prs .pr-card .val small { color: var(--text-3); }
+
+    /* ----------------------------------------------------------------
+       Screen — Library
+       ---------------------------------------------------------------- */
+    .scr-lib .search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-2);
+      border: 1px solid rgba(56,80,58,0.6);
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: var(--text-3);
+      font-size: 12px;
+    }
+    .scr-lib .search svg { width: 13px; height: 13px; stroke: var(--text-3); fill: none; stroke-width: 2; }
+    .scr-lib .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .scr-lib .chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,80,58,0.6);
+      font-family: var(--display);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-2);
+      text-transform: uppercase;
+    }
+    .scr-lib .chip.active { background: var(--gold); color: var(--bg-1); border-color: var(--gold); }
+
+    .scr-lib .ex-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .scr-lib .ex-tile {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 84px;
+      position: relative;
+    }
+    .scr-lib .ex-tile .muscle {
+      font-family: var(--display);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .scr-lib .ex-tile .ex {
+      font-size: 11px;
+      color: var(--text-1);
+      line-height: 1.25;
+      font-weight: 500;
+    }
+    .scr-lib .ex-tile .star {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+    .scr-lib .ex-tile.fav .star { color: var(--gold); }
+
+    /* ----------------------------------------------------------------
+       Feature walkthrough
+       ---------------------------------------------------------------- */
+    .feature {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      padding: clamp(50px, 7vw, 90px) 0;
+    }
+    .feature--reverse .feature__phone { order: 2; }
+    @media (max-width: 900px) {
+      .feature, .feature--reverse { grid-template-columns: 1fr; gap: 50px; }
+      .feature--reverse .feature__phone { order: 0; }
+    }
+    .feature__phone {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+    .feature__phone .phone-shot,
+    .feature__phone .phone {
+      transform: perspective(1400px) rotateY(8deg);
+      transition: transform 0.6s ease;
+    }
+    .feature--reverse .feature__phone .phone-shot,
+    .feature--reverse .feature__phone .phone {
+      transform: perspective(1400px) rotateY(-8deg);
+    }
+    .feature__phone .phone-shot:hover,
+    .feature__phone .phone:hover { transform: perspective(1400px) rotateY(0deg); }
+    /* Don't apply the rotateY to the paired-phones layout (it has its own transforms) */
+    .feature__phone .phone-pair .phone-shot,
+    .feature__phone .phone-pair .phone-shot:hover {
+      transition: transform 0.6s ease;
+    }
+
+    .feature__copy h2 { margin-top: 18px; margin-bottom: 18px; }
+    .feature__copy .step-num {
+      font-family: var(--display);
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+    }
+    .feature__copy .step-num span { color: var(--text-3); margin-left: 6px; }
+    .feature__copy .tech-note {
+      margin-top: 22px;
+      padding: 16px 18px;
+      background: rgba(36,53,36,0.6);
+      border-left: 2px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: var(--text-2);
+    }
+    .feature__copy .tech-note code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* ----------------------------------------------------------------
+       Section header
+       ---------------------------------------------------------------- */
+    .section-head {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 720px;
+      margin-bottom: 60px;
+    }
+    .section-head .lead { font-size: 17px; color: var(--text-2); }
+
+    /* ----------------------------------------------------------------
+       Live Activity section
+       ---------------------------------------------------------------- */
+    .live {
+      background:
+        radial-gradient(800px 500px at 80% 50%, rgba(212,164,57,0.08), transparent 70%),
+        var(--bg-0);
+      border-top: 1px solid var(--bg-3);
+      border-bottom: 1px solid var(--bg-3);
+    }
+    .live__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    @media (max-width: 980px) { .live__grid { grid-template-columns: 1fr; } }
+
+    /* Lock screen mockup */
+    .lockscreen {
+      position: relative;
+      width: 340px;
+      height: 700px;
+      margin: 0 auto;
+      border-radius: 44px;
+      padding: 14px;
+      background: linear-gradient(160deg, #0a1108, #050805);
+      box-shadow: 0 0 0 1.5px #000, var(--shadow-soft);
+    }
+    .lockscreen__inner {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      background:
+        radial-gradient(120% 60% at 50% 0%, rgba(56,80,58,0.45), transparent 60%),
+        linear-gradient(180deg, #0d1a10 0%, #061008 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+    }
+    .lockscreen__island {
+      width: 200px;
+      height: 38px;
+      background: #000;
+      border-radius: 22px;
+      margin-top: 4px;
+      display: grid;
+      grid-template-columns: 30px 1fr 50px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+    .lockscreen__island .di-icon {
+      width: 14px; height: 14px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 2s linear infinite;
+    }
+    .lockscreen__island .di-label {
+      font-family: var(--display);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--text-1);
+    }
+    .lockscreen__time {
+      margin-top: 50px;
+      font-family: var(--display);
+      font-size: 78px;
+      letter-spacing: 0.04em;
+      color: var(--text-1);
+      line-height: 1;
+    }
+    .lockscreen__date {
+      font-size: 13px;
+      color: var(--text-2);
+      letter-spacing: 0.06em;
+      margin-top: 6px;
+    }
+
+    .la-card {
+      margin-top: auto;
+      width: 100%;
+      background: rgba(20, 36, 26, 0.85);
+      backdrop-filter: blur(20px);
+      border-radius: 18px;
+      border: 1px solid rgba(212,164,57,0.3);
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+    .la-card .icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--gold);
+      color: var(--bg-1);
+      display: grid;
+      place-items: center;
+      font-family: var(--display);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    .la-card .info .label {
+      font-family: var(--display);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+    .la-card .info .ex {
+      font-size: 13px;
+      color: var(--text-1);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+    .la-card .timer {
+      font-family: var(--mono);
+      font-size: 22px;
+      color: var(--gold-light);
+      letter-spacing: 0.04em;
+    }
+
+    /* ----------------------------------------------------------------
+       Architecture diagram
+       ---------------------------------------------------------------- */
+    .arch__grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    @media (max-width: 980px) { .arch__grid { grid-template-columns: 1fr; } }
+
+    .arch-diagram {
+      background: var(--bg-2);
+      border: 1px solid var(--bg-3);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .arch-stack { display: flex; flex-direction: column; gap: 10px; }
+    .arch-node {
+      background: var(--bg-1);
+      border: 1px solid var(--bg-3);
+      border-left: 3px solid var(--gold);
+      padding: 14px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .arch-node .name {
+      font-family: var(--display);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: var(--text-1);
+    }
+    .arch-node .meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .arch-arrow {
+      align-self: center;
+      color: var(--gold);
+      font-family: var(--display);
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    .arch-node--db {
+      border-left-color: var(--gold-light);
+      background: linear-gradient(135deg, rgba(212,164,57,0.08), rgba(232,193,100,0.04));
+    }
+    .arch-node--db .name { color: var(--gold-light); }
+
+    .arch-callouts { display: flex; flex-direction: column; gap: 18px; }
+    .arch-callout {
+      padding: 18px 20px;
+      border: 1px solid var(--bg-3);
+      border-radius: 12px;
+      background: rgba(36,53,36,0.4);
+    }
+    .arch-callout .k {
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .arch-callout .d { font-size: 14px; color: var(--text-2); margin: 0; }
+    .arch-callout .d code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.3);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* ----------------------------------------------------------------
+       Tech stack grid
+       ---------------------------------------------------------------- */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 800px) { .stack-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stack-tile {
+      background: var(--bg-2);
+      border: 1px solid rgba(56,80,58,0.6);
+      border-radius: 12px;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .stack-tile:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+    .stack-tile .name {
+      font-family: var(--display);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: var(--text-1);
+    }
+    .stack-tile .role {
+      font-size: 12px;
+      color: var(--text-3);
+      letter-spacing: 0.02em;
+    }
+
+    /* ----------------------------------------------------------------
+       Achievements
+       ---------------------------------------------------------------- */
+    .achv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 800px) { .achv-grid { grid-template-columns: 1fr; } }
+    .achv {
+      padding: 26px;
+      background: var(--bg-2);
+      border: 1px solid var(--bg-3);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .achv::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 60px; height: 2px;
+      background: var(--gold);
+    }
+    .achv .num {
+      font-family: var(--display);
+      font-size: 36px;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .achv h3 {
+      font-family: var(--display);
+      font-size: 18px;
+      letter-spacing: 0.06em;
+      color: var(--text-1);
+      margin: 14px 0 10px;
+    }
+    .achv p { font-size: 14px; margin: 0; color: var(--text-2); }
+    .achv p code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.3);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* ----------------------------------------------------------------
+       Scroll reveal
+       ---------------------------------------------------------------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .rest-pill .ring, .lockscreen__island .di-icon { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <div class="nav__left">
+        <a href="/#projects" class="nav__back">&larr; alex@rolnik</a>
+        <a href="#top" class="nav__brand">MELIFT</a>
+      </div>
+      <div class="nav__links">
+        <a href="#features">Features</a>
+        <a href="#live">Live Activities</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#stack">Stack</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero" id="top">
+    <div class="container">
+      <div class="hero__grid">
+        <div class="reveal">
+          <span class="eyebrow">Native iOS &middot; Case Study</span>
+          <h1 class="display hero__title">
+            Strength<br/>
+            training,<br/>
+            <span class="accent">instrumented.</span>
+          </h1>
+          <div class="hero__rule"></div>
+          <div class="hero__sub">MeLift / a SwiftUI workout system</div>
+          <p class="hero__copy">
+            A native iOS app for serious lifters &mdash; built end-to-end in
+            SwiftUI on a Supabase backend. Plan splits, log sets in real time,
+            track personal records, and watch the rest timer live on the Lock
+            Screen and Dynamic Island.
+          </p>
+
+          <div class="cta-row">
+            <a class="btn btn--primary" href="#features">
+              Walk through the app <span class="arrow">&rarr;</span>
+            </a>
+            <a class="btn btn--ghost" href="#architecture">
+              Architecture
+            </a>
+          </div>
+
+          <div class="hero__meta">
+            <div>
+              <span class="k">Platform</span>
+              <span class="v">iOS 18 &middot; iPhone / iPad</span>
+            </div>
+            <div>
+              <span class="k">Stack</span>
+              <span class="v">Swift &middot; SwiftUI &middot; Supabase</span>
+            </div>
+            <div>
+              <span class="k">Scope</span>
+              <span class="v">Solo build &middot; ~87 Swift files</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__phone-wrap reveal">
+          <span class="callout callout--top">Real-time set tracking</span>
+          <span class="callout callout--mid">Pre-fills from last session</span>
+          <span class="callout callout--bot callout--right">ActivityKit Live Activity</span>
+          <div class="phone-shot">
+            <img src="screens/active-workout.png" alt="MeLift active workout screen showing the Legs 1 routine with Leg Press and Stiff-Leg Deadlift exercises, set entry rows, and an active rest timer." />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       FEATURES
+       ============================================================ -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Walkthrough</span>
+        <h2 class="display">The full loop, end to end.</h2>
+        <p class="lead">
+          Every surface is built in SwiftUI, themed through a central
+          <code style="font-family:var(--mono);color:var(--gold-light)">ColorPalette</code>
+          so the entire app retunes when the user picks Forest, Blue Steel,
+          Light, or Dark. Below: actual captures from the app, and the
+          engineering behind each screen.
+        </p>
+      </div>
+
+      <!-- Feature 1: Plan -->
+      <div class="feature reveal">
+        <div class="feature__phone">
+          <div class="phone-shot">
+            <img src="screens/workouts.png" alt="MeLift Workouts tab showing user's training splits (Upper Lower, Full Body marked CURRENT, PPLPPL) and individual workouts (Legs 1, Push 2, Pull 2, Legs 2)." />
+          </div>
+        </div>
+        <div class="feature__copy">
+          <div class="step-num">01 <span>/ 05</span></div>
+          <h2 class="display">Plan the week, not just the workout.</h2>
+          <p>
+            Splits sit above individual workouts. Lifters keep multiple
+            programs &mdash; PPL, Upper/Lower, Full Body &mdash; and mark
+            one as <em>current</em> so the Log tab always defaults to
+            today&rsquo;s session in their active rotation.
+          </p>
+          <div class="tech-note">
+            <strong>Engineering:</strong> splits and workouts live in
+            separate Postgres tables joined by an ordered
+            <code>split_workouts</code> table; the &ldquo;current&rdquo;
+            flag is enforced through a partial unique index so only one
+            split per user can be active at a time.
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 2: Build -->
+      <div class="feature feature--reverse reveal">
+        <div class="feature__phone">
+          <div class="phone-shot">
+            <img src="screens/new-workout.png" alt="MeLift workout builder showing the New Workout form with name, optional notes, and a draggable exercise list including Barbell Back Squat, Bulgarian Split Squat, and Leg Press, each with set count and bilateral/unilateral movement controls." />
+          </div>
+        </div>
+        <div class="feature__copy">
+          <div class="step-num">02 <span>/ 05</span></div>
+          <h2 class="display">Build workouts with intent.</h2>
+          <p>
+            Drag exercises into order, set the working set count, and tag
+            each as bilateral or unilateral &mdash; with dumbbell-count
+            controls for asymmetric movements. The whole composition is
+            an editable draft until the user saves.
+          </p>
+          <div class="tech-note">
+            <strong>Engineering:</strong> a composable form view-model
+            holds an unsaved <code>Workout</code> aggregate with its
+            child <code>workout_exercises</code>; reordering and set
+            changes mutate local state, so a single
+            <code>Save</code> commits the entire tree in one round-trip.
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 3: Track Progress (paired phones) -->
+      <div class="feature reveal">
+        <div class="feature__phone">
+          <div class="phone-pair">
+            <div class="phone-shot">
+              <img src="screens/progress.png" alt="MeLift Progress dashboard showing Last Week / All Time toggle, stat tiles for Workouts (3), Volume (56.0K lbs), Reps (597), and Sets (54), and a Weight Moved chart over the week." />
+            </div>
+            <div class="phone-shot">
+              <img src="screens/progress-history.png" alt="MeLift Progress screen scrolled to show the Weight Moved area chart and a Workout History list with per-session set count and total volume." />
+            </div>
+          </div>
+        </div>
+        <div class="feature__copy">
+          <div class="step-num">03 <span>/ 05</span></div>
+          <h2 class="display">Progress, drawn natively.</h2>
+          <p>
+            Stat tiles, a Weight Moved chart, and a session-by-session
+            history &mdash; all rendered with Apple&rsquo;s Swift Charts.
+            No chart libraries, no WebViews, no JavaScript. The same data
+            powers all three views.
+          </p>
+          <div class="tech-note">
+            <strong>Engineering:</strong> a single <code>ProgressService</code>
+            issues window-bounded queries against
+            <code>workout_sessions</code> and aggregates client-side, so
+            the stat tiles, the Weight Moved chart, and the history list
+            share one fetch &mdash; no duplicate network hits when the
+            user toggles between Last Week and All Time.
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 4: Personal Records -->
+      <div class="feature feature--reverse reveal">
+        <div class="feature__phone">
+          <div class="phone-shot">
+            <img src="screens/personal-records.png" alt="MeLift Personal Records screen listing all-time bests by exercise: Standing Calf Raise 190 lbs, Barbell Back Squat 195 lbs, Cable Curl 40 lbs, Cable Lateral Raise 14 lbs, Chest Supported Row 200 lbs, Straight Bar Pushdown 50 lbs, Quad Extensions 140 lbs, Seated Dumbbell Shoulder Press." />
+          </div>
+        </div>
+        <div class="feature__copy">
+          <div class="step-num">04 <span>/ 05</span></div>
+          <h2 class="display">A PR engine, not a leaderboard.</h2>
+          <p>
+            Every completed set is compared against the user&rsquo;s
+            history across both weight and reps. The detector tags
+            genuine bests in real time, filterable by muscle group, and
+            surfaces them inline next to the set that earned them.
+          </p>
+          <div class="tech-note">
+            <strong>Engineering:</strong> the PR routine in
+            <code>ProgressService</code> compares each session&rsquo;s
+            best sets against historical bests by both load and rep count
+            &mdash; so a new 5-rep best at the same weight still counts,
+            not just heavier loads.
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 5: Library -->
+      <div class="feature reveal">
+        <div class="feature__phone">
+          <div class="phone-shot">
+            <img src="screens/library.png" alt="MeLift Exercise Library showing the search field, muscle-group filter chips (All, Favorites, Chest, Back, Shoulders), and a list of exercises with custom icons: 21s (Biceps · Barbell), 21s (Biceps · Dumbbell), Ab Wheel Rollout, Alternating Dumbbell Curl, Arnold Press, Assisted Dip, Assisted Pull-Up." />
+          </div>
+        </div>
+        <div class="feature__copy">
+          <div class="step-num">05 <span>/ 05</span></div>
+          <h2 class="display">A library that ships, plus one you build.</h2>
+          <p>
+            Hundreds of defaulted exercises with muscle-group filters,
+            search, and favorites &mdash; layered with user-created
+            exercises that live on the same screen. Workouts and splits
+            compose from either, then export and import via a versioned
+            <code style="font-family:var(--mono);color:var(--gold-light)">.melift</code>
+            JSON format.
+          </p>
+          <div class="tech-note">
+            <strong>Engineering:</strong> the
+            <code>LibraryViewModel</code> merges defaulted and user-owned
+            exercises through a single Combine pipeline, with favorites
+            kept in their own table so star toggles never invalidate the
+            full exercise list.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       LIVE ACTIVITY
+       ============================================================ -->
+  <section class="live" id="live">
+    <div class="container">
+      <div class="live__grid">
+        <div class="reveal" style="display:flex;justify-content:center">
+          <div class="lockscreen">
+            <div class="lockscreen__inner">
+              <div class="lockscreen__island">
+                <div class="di-icon"></div>
+                <div class="di-label">REST</div>
+                <div style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--gold-light)">1:08</div>
+              </div>
+              <div class="lockscreen__time">9:41</div>
+              <div class="lockscreen__date">Friday, May 15</div>
+
+              <div class="la-card">
+                <div class="icon">ML</div>
+                <div class="info">
+                  <div class="label">MeLift &middot; Rest Timer</div>
+                  <div class="ex">Bench Press &middot; Set 3 of 4</div>
+                </div>
+                <div class="timer">1:08</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <span class="eyebrow">Platform integration</span>
+          <h2 class="display" style="margin-top:18px;margin-bottom:18px">
+            The rest timer leaves the app.
+          </h2>
+          <p class="lead">
+            Built on <strong>ActivityKit</strong> and
+            <strong>WidgetKit</strong>, MeLift&rsquo;s rest timer continues
+            running on the Lock Screen and inside the Dynamic Island. Lifters
+            don&rsquo;t have to keep the app foregrounded between sets &mdash;
+            the countdown is right there on the home indicator, even one-handed
+            mid-rack.
+          </p>
+          <div class="arch-callout" style="margin-top:24px">
+            <div class="k">Implementation</div>
+            <p class="d">
+              A dedicated <code>RestTimerLiveActivityManager</code> owns the
+              <code>Activity&lt;RestTimerAttributes&gt;</code> lifecycle:
+              start, push state updates as the user re-racks early, and end on
+              completion. The widget extension renders the same model on the
+              Lock Screen, in the compact island, and in the expanded island.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ARCHITECTURE
+       ============================================================ -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Under the hood</span>
+        <h2 class="display">A small, deliberate architecture.</h2>
+        <p class="lead">
+          MVVM with a clean services boundary. SwiftUI views never touch
+          Supabase directly &mdash; every read and write flows through a
+          typed service that maps a snake_case database row to a domain
+          model the views actually want.
+        </p>
+      </div>
+
+      <div class="arch__grid reveal">
+        <div class="arch-diagram">
+          <div class="arch-stack">
+            <div class="arch-node">
+              <span class="name">SwiftUI Views</span>
+              <span class="meta">declarative · themed · per-feature</span>
+            </div>
+            <div class="arch-arrow">&darr;</div>
+            <div class="arch-node">
+              <span class="name">ViewModels (Combine)</span>
+              <span class="meta">@Published · @MainActor</span>
+            </div>
+            <div class="arch-arrow">&darr;</div>
+            <div class="arch-node">
+              <span class="name">Services</span>
+              <span class="meta">Auth · Workout · Progress · Exercise</span>
+            </div>
+            <div class="arch-arrow">&darr;</div>
+            <div class="arch-node">
+              <span class="name">Database Models</span>
+              <span class="meta">Codable · snake_case ↔ camelCase</span>
+            </div>
+            <div class="arch-arrow">&darr;</div>
+            <div class="arch-node arch-node--db">
+              <span class="name">Supabase</span>
+              <span class="meta">PostgreSQL · Auth · PostgREST</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-callouts">
+          <div class="arch-callout">
+            <div class="k">No N+1 queries</div>
+            <p class="d">
+              Workouts and splits are pulled with a single nested
+              <code>select(...)</code> &mdash;
+              <code>workouts(*, workout_exercises(*, exercises(*)))</code>
+              &mdash; in one round-trip.
+            </p>
+          </div>
+          <div class="arch-callout">
+            <div class="k">Secure session</div>
+            <p class="d">
+              Supabase Auth handles JWT lifecycle; the app caches the user
+              profile in <code>Keychain</code> via a
+              <code>KeychainHelper</code> wrapper, never UserDefaults.
+            </p>
+          </div>
+          <div class="arch-callout">
+            <div class="k">Portable workouts</div>
+            <p class="d">
+              <code>WorkoutShareService</code> serializes splits, workouts,
+              and custom exercises to a versioned JSON payload with a
+              <code>.melift</code> extension so users can share programs
+              offline.
+            </p>
+          </div>
+          <div class="arch-callout">
+            <div class="k">Themable to the core</div>
+            <p class="d">
+              <code>ThemeManager</code> exposes a single
+              <code>ColorPalette</code>; every view reads through it so
+              switching themes (Forest, Blue Steel, Dark, Light) updates
+              the entire app instantly.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STACK
+       ============================================================ -->
+  <section id="stack" style="background:var(--bg-0);border-top:1px solid var(--bg-3);border-bottom:1px solid var(--bg-3)">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Tech stack</span>
+        <h2 class="display">Built natively. Backed by Postgres.</h2>
+      </div>
+
+      <div class="stack-grid reveal">
+        <div class="stack-tile"><span class="name">SWIFT</span><span class="role">Application language</span></div>
+        <div class="stack-tile"><span class="name">SWIFTUI</span><span class="role">Declarative UI</span></div>
+        <div class="stack-tile"><span class="name">COMBINE</span><span class="role">Reactive bindings</span></div>
+        <div class="stack-tile"><span class="name">SWIFT CHARTS</span><span class="role">Native analytics</span></div>
+        <div class="stack-tile"><span class="name">ACTIVITYKIT</span><span class="role">Live Activities</span></div>
+        <div class="stack-tile"><span class="name">WIDGETKIT</span><span class="role">Dynamic Island</span></div>
+        <div class="stack-tile"><span class="name">SUPABASE</span><span class="role">Backend platform</span></div>
+        <div class="stack-tile"><span class="name">POSTGRESQL</span><span class="role">Relational store</span></div>
+        <div class="stack-tile"><span class="name">POSTGREST</span><span class="role">Typed REST layer</span></div>
+        <div class="stack-tile"><span class="name">KEYCHAIN</span><span class="role">Secure session</span></div>
+        <div class="stack-tile"><span class="name">XCODE 16</span><span class="role">Build &amp; ship</span></div>
+        <div class="stack-tile"><span class="name">iOS 18+</span><span class="role">Deployment target</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ACHIEVEMENTS
+       ============================================================ -->
+  <section>
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Highlights</span>
+        <h2 class="display">What I&rsquo;d talk about in an interview.</h2>
+        <p class="lead">
+          The moments where MeLift went past CRUD &mdash; product decisions,
+          performance trade-offs, and platform features that took real
+          engineering to land.
+        </p>
+      </div>
+
+      <div class="achv-grid reveal">
+        <div class="achv">
+          <div class="num">01</div>
+          <h3>PR DETECTION ENGINE</h3>
+          <p>
+            Two-dimensional comparison (load &times; reps) against full
+            user history, so a new 5-rep best at the same weight still
+            counts. Lives in <code>ProgressService</code> and powers the
+            badge UI in real time.
+          </p>
+        </div>
+        <div class="achv">
+          <div class="num">02</div>
+          <h3>LIVE ACTIVITIES</h3>
+          <p>
+            Full <code>ActivityKit</code> integration for the rest timer
+            on the Lock Screen and Dynamic Island &mdash; far past a basic
+            in-app countdown, and a real iOS 16+ platform feature.
+          </p>
+        </div>
+        <div class="achv">
+          <div class="num">03</div>
+          <h3>EFFICIENT QUERIES</h3>
+          <p>
+            Hierarchical Supabase reads
+            (<code>workouts &rarr; exercises &rarr; sets</code>) consolidated
+            into single nested <code>select</code> calls to eliminate N+1
+            round-trips on the hot loading paths.
+          </p>
+        </div>
+        <div class="achv">
+          <div class="num">04</div>
+          <h3>PORTABLE FORMAT</h3>
+          <p>
+            Versioned <code>.melift</code> JSON payloads for sharing
+            programs across users and devices, designed to be
+            forward-compatible as the schema evolves.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Tiny scroll reveal — IntersectionObserver, no deps.
+    (function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if (prefersReduced || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
