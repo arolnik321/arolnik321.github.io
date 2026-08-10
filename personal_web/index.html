@@ -175,7 +175,7 @@
     .line-num {
         display: block;
         font-size: 0.75rem;
-        line-height: 1.75;
+        line-height: 1.5rem;
         padding: 0 0.7rem 0 0.5rem;
         color: var(--border);
     }
@@ -194,7 +194,7 @@
             rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px
         );
     }
-    .code-line { display: block; white-space: pre; }
+    .code-line { display: block; white-space: pre; line-height: 1.5rem; min-height: 1.5rem; }
     .code-line.active-line { background: rgba(75,158,255,0.06); border-radius: 2px; }
 
     /* result pane */
@@ -592,8 +592,10 @@
 
         /* Gantt */
         #ganttView { -webkit-overflow-scrolling: touch; }
-        .gantt-header-row { margin-left: 130px; }
-        .gantt-row-label  { width: 130px; font-size: 0.6rem; }
+        .gantt-header-row { margin-left: 186px; }
+        .gantt-group-company { width: 74px; }
+        .gantt-company-name { font-size: 0.62rem; }
+        .gantt-role-label { width: 112px; font-size: 0.58rem; }
 
         /* Projects & contact */
         .proj-grid    { grid-template-columns: 1fr; }
@@ -608,12 +610,15 @@
     /* ── GANTT ───────────────────────────────────────────────── */
     #ganttView { overflow-x: auto; padding-bottom: 0.5rem; }
     .gantt-chart { min-width: 580px; }
-    .gantt-header-row { display:flex; margin-left:195px; position:relative; height:20px; margin-bottom:2px; }
+    .gantt-header-row { display:flex; margin-left:315px; position:relative; height:20px; margin-bottom:2px; }
     .gantt-year-tick { position:absolute; font-size:0.59rem; color:var(--muted); transform:translateX(-50%); user-select:none; }
+    .gantt-group { display:flex; align-items:stretch; margin-bottom:9px; }
+    .gantt-group-company { width:120px; flex-shrink:0; box-sizing:border-box; display:flex; align-items:center; justify-content:flex-end; text-align:right; padding-right:10px; border-right:2px solid var(--border); }
+    .gantt-company-name { color:var(--text); font-size:0.72rem; font-weight:700; line-height:1.25; }
+    .gantt-group-rows { flex:1; display:flex; flex-direction:column; }
     .gantt-row { display:flex; align-items:center; margin-bottom:4px; min-height:26px; }
-    .gantt-row-label { width:195px; flex-shrink:0; font-size:0.67rem; color:var(--muted); padding-right:10px; text-align:right; line-height:1.35; overflow:hidden; }
-    .gantt-row-label strong { color:var(--text); display:block; font-size:0.7rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .gantt-row-label span { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gantt-row:last-child { margin-bottom:0; }
+    .gantt-role-label { width:195px; flex-shrink:0; box-sizing:border-box; font-size:0.67rem; color:var(--muted); padding-right:10px; text-align:right; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .gantt-bars-area { flex:1; position:relative; height:24px; background:rgba(255,255,255,0.015); border-radius:2px; }
     .gantt-gridline { position:absolute; top:0; bottom:0; width:1px; background:var(--border); pointer-events:none; }
     .gantt-bar-el { position:absolute; height:18px; top:3px; border-radius:3px; cursor:pointer; transition:filter 0.15s; display:flex; align-items:center; overflow:hidden; }
@@ -730,23 +735,23 @@
                 <div class="about-name">
                     <span class="about-name-main">Alex Rolnik</span>
                     <span class="about-name-sep">/</span>
-                    <span class="about-name-role">Senior Solutions Architect IV · Komodo Health</span>
+                    <span class="about-name-role">Senior Product Manager, Surfaces · Komodo Health</span>
                 </div>
-                <p>I'm a <span class="bl">Senior Solutions Architect</span> specializing in
-                <b>data analytics, data architecture, and enterprise client implementations</b> —
-                turning complex technical requirements into solutions that actually ship.</p>
+                <p>I'm a <span class="bl">Senior Product Manager</span> on the Surfaces team at Komodo Health,
+                where I turn complex healthcare-data problems into <b>products that ship</b>. I partner closely
+                with <b>Engineering and Design</b> to define requirements, shape the roadmap, and sequence delivery.</p>
 
-                <p>Over the past decade I've worked directly with clients across healthcare data, fintech,
-                and SaaS — owning everything from technical discovery and <span class="am">pipeline design</span>
-                to go-live and stakeholder alignment. Whether it's a <span class="bl">Snowflake data mart</span>,
-                a custom Python automation, or an AI agent that cuts SLAs, I get it across the finish line.</p>
+                <p>I moved into product after <b>4 years</b> as a <span class="bl">Senior Solutions Architect</span>,
+                where I conducted enterprise healthcare-data implementations end-to-end across <b>100+ client engagements</b> —
+                owning everything from technical discovery and <span class="am">pipeline design</span> to go-live and
+                stakeholder alignment. That background means I write requirements grounded in how systems actually get built and ship.</p>
 
-                <p>I also build on the side. At Komodo I've shipped <b>5 production AI apps</b> — including an LLM-powered ticket generator, an automated data delivery platform, and a privacy-preserving patient overlap tool — using <span class="bl">Python, FastAPI, React, Claude, and Gemini</span>. Outside of work I built <a href="projects/melift/" class="about-link">MeLift</a>, a native iOS workout tracker, and <a href="projects/whattowatch/" class="about-link">WhatToWatch</a>, an Apple TV streaming aggregator.</p>
+                <p>I also build. At Komodo I've shipped <b>5 production AI apps</b> — an LLM-powered ticket generator, an automated data delivery platform, and a privacy-preserving patient overlap tool — using <span class="bl">Python, FastAPI, React, Claude, and Gemini</span>. Outside work I built <a href="projects/melift/" class="about-link">MeLift</a>, a native iOS workout tracker, and <a href="projects/whattowatch/" class="about-link">WhatToWatch</a>, an Apple TV streaming aggregator.</p>
             </div>
             <div class="stat-grid">
                 <div class="stat"><div class="stat-n" data-count="10" data-suffix="+">10+</div><div class="stat-l">years_experience</div></div>
                 <div class="stat"><div class="stat-n" data-count="100" data-suffix="+">100+</div><div class="stat-l">client_engagements</div></div>
-                <div class="stat"><div class="stat-n" data-count="5" data-suffix="">5</div><div class="stat-l">ai_apps_shipped</div></div>
+                <div class="stat"><div class="stat-n" data-count="7" data-suffix="">7</div><div class="stat-l">ai_apps_shipped</div></div>
                 <div class="stat"><div class="stat-n" data-count="40" data-suffix="h">40h</div><div class="stat-l">automation_savings_mo</div></div>
             </div>
         </div>
@@ -807,8 +812,9 @@
                 <div class="sk-title">Methodologies</div>
                 <div class="tags">
                     <span class="tag">ELT / ETL</span><span class="tag">REST API</span>
-                    <span class="tag">Data Analytics</span><span class="tag">Data Management</span>
-                    <span class="tag">Agile</span><span class="tag">Project Mgmt</span>
+                    <span class="tag">Data Analytics</span><span class="tag">Data QA &amp; Validation</span>
+                    <span class="tag">Data Management</span><span class="tag">Agile</span>
+                    <span class="tag">Project Mgmt</span>
                     <span class="tag">Product Mgmt</span><span class="tag">UI/UX Design</span>
                     <span class="tag">UAT</span><span class="tag">End User Training</span>
                     <span class="tag">Product Analytics</span><span class="tag">NPS Surveys</span>
@@ -880,17 +886,27 @@
                 <div class="exp-body">
                     <div class="exp-co">Komodo Health, Inc. <small>| New York, NY</small></div>
                     <div class="roles">
+                        <div class="role" id="role-komodo-spm">
+                            <div class="role-hd">
+                                <span class="role-title">Senior Product Manager</span>
+                                <span class="role-dates">Jun 2026 – Present</span>
+                            </div>
+                            <ul class="bullets">
+                                <li>Translated customer insights, market needs, and stakeholder feedback into product requirements, user stories, and acceptance criteria</li>
+                                <li>Lead cross-functional planning with Engineering and Design to define product requirements and roadmap initiatives for development</li>
+                            </ul>
+                        </div>
                         <div class="role" id="role-komodo-sa4">
                             <div class="role-hd">
                                 <span class="role-title">Senior Solutions Architect IV</span>
-                                <span class="role-dates">Apr 2024 – Present</span>
+                                <span class="role-dates">Apr 2024 – Jun 2026</span>
                             </div>
                             <ul class="bullets">
-                                <li>Developed and maintained 5 production AI applications using Python, FastAPI, React, and LLM APIs, cutting hundreds of hours of SA operational overhead monthly — detailed in Technical Projects section below</li>
-                                <li>Served on Komodo's AI Council on the Adoption &amp; Enablement Team, driving organization-wide initiatives to help employees integrate AI tools and workflows into daily operations</li>
-                                <li>Spearheaded the on-time implementation of both standard and custom Komodo solutions across 100+ client engagements</li>
+                                <li>Built and maintain 5 production applications (Python, FastAPI, React, LLM APIs) that removed ~150 hours of monthly solutions-architecture overhead across the team (detailed in Komodo Technical Projects section below)</li>
+                                <li>Owned end-to-end implementation of standard and custom healthcare data solutions across 100+ client engagements, scoping requirements, sequencing milestones, and coordinating engineering, privacy, and delivery partners to hit committed dates</li>
                                 <li>Automated 15 complex client deliveries by creating bespoke Python scripts, reducing operational processing time by 40 hours monthly</li>
-                                <li>Led the onboarding and mentorship of new Solutions Architects, accelerating their path to self-sufficiency within 3 months</li>
+                                <li>Onboarded and mentored 3 new Solutions Architects, accelerating their path to self-sufficiency within 2 months</li>
+                                <li>Selected to Komodo's AI Council (Adoption &amp; Enablement), driving organization-wide initiatives to help employees integrate AI tools and workflows into daily operations</li>
                             </ul>
                         </div>
                         <div class="role" id="role-komodo-sa3">
@@ -900,6 +916,7 @@
                             </div>
                             <ul class="bullets">
                                 <li>Implemented standard and customized Komodo products for over 20 client engagements</li>
+                                <li>Served as primary technical point of contact for 20+ client implementations by running requirements sessions, UAT, and go-live with customer stakeholders</li>
                                 <li>Produced implementation process guidelines and videos for 4 Komodo products resulting in a 50% decrease in deployment time</li>
                                 <li>Developed Snowflake Procedures and Tasks to automate dynamic data deliveries significantly reducing manual execution efforts</li>
                             </ul>
@@ -964,7 +981,7 @@
                             </div>
                             <ul class="bullets">
                                 <li>Configured and implemented complex T-SQL functions, views, stored procedures, and batch jobs across 10 client databases</li>
-                                <li>Managed daily ad-hoc analyses and software customization requests from Executive level clients</li>
+                                <li>Managed daily ad-hoc analyses and software customization requests from executive level clients</li>
                                 <li>Created Tableau dashboards assist clients' decision-making and problem-solving processes</li>
                             </ul>
                         </div>
@@ -1011,7 +1028,6 @@
             </div>
 
         </div>
-        <div id="ganttView" style="display:none" class="fi d1"></div>
     </section>
 
     <!-- PROJECTS -->
@@ -1032,40 +1048,40 @@
                     <div class="proj-card-hd"><span class="proj-name">Komodo Delivery Platform</span><span class="proj-badge">Python · FastAPI · React</span></div>
                     <div class="proj-stack"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">Glean AI</span><span class="tag">Snowflake</span><span class="tag">APScheduler</span><span class="tag">AWS Lambda</span></div>
                     <ul class="bullets">
-                        <li>Architected end-to-end pipeline automating scheduling, QA-gating, and delivery of healthcare data exports for 70+ recurring deliveries — replaced ~2 hrs/delivery manual workflow</li>
-                        <li>Built 3-signal QA engine with Glean AI severity triage enabling unattended overnight delivery; reduced escalation rate ~75%</li>
+                        <li>Architected an end-to-end pipeline automating specification, scheduling, QA gating, and delivery of de-identified healthcare data exports, replacing a ~2-hour/delivery manual workflow across 150+ recurring deliveries</li>
+                        <li>Built a 3-signal QA engine (DQ Gate + Standard QA + custom SQL) with Glean AI severity triage, enabling unattended overnight delivery on QA pass and reducing escalation rate ~75%</li>
                     </ul>
                 </div>
                 <div class="proj-card">
                     <div class="proj-card-hd"><span class="proj-name">Jira Ticket Generator</span><span class="proj-badge">LLM · Gemini · Glean AI</span></div>
-                    <div class="proj-stack"><span class="tag">Python</span><span class="tag">React</span><span class="tag">Gemini LLM</span><span class="tag">Glean AI</span><span class="tag">Jira REST API</span></div>
+                    <div class="proj-stack"><span class="tag">Python</span><span class="tag">React</span><span class="tag">Glean AI</span><span class="tag">Gemini LLM</span><span class="tag">Jira REST API</span></div>
                     <ul class="bullets">
-                        <li>LLM-powered tool converting natural-language descriptions to fully populated epic/subtask trees; maps 8+ Jira custom fields automatically</li>
-                        <li>Cut ticket creation from 2 hrs → 2 min; adopted by the full SA team across 45+ engagements</li>
+                        <li>Turns a natural-language engagement description into a fully populated epic/subtask tree, automating mapping of 8+ custom fields</li>
+                        <li>Cut ticket creation and information-gathering from 2 hours to 2 minutes and is now fully adopted by Solutions Architect team</li>
                     </ul>
                 </div>
                 <div class="proj-card">
                     <div class="proj-card-hd"><span class="proj-name">Export Builder</span><span class="proj-badge">Python · React · Kubernetes</span></div>
                     <div class="proj-stack"><span class="tag">Python</span><span class="tag">React</span><span class="tag">Komodo SDK</span><span class="tag">Kubernetes</span></div>
                     <ul class="bullets">
-                        <li>Self-service app for clients to configure and execute dataset exports to S3/SFTP, replacing one-off engineer scripts</li>
-                        <li>Cut export turnaround from ~7 days → ~1 hour with real-time feedback and zero engineering involvement per run</li>
+                        <li>Self-service web app letting external clients configure and execute dataset exports to customer S3/SFTP destinations, replacing engineer-authored one-off scripts</li>
+                        <li>Shortened typical export deliveries from ~7 days to ~1 hour with real-time execution feedback and zero engineering involvement</li>
                     </ul>
                 </div>
                 <div class="proj-card">
                     <div class="proj-card-hd"><span class="proj-name">Overlap Analysis Builder</span><span class="proj-badge">FastAPI · Snowflake · Datavant</span></div>
                     <div class="proj-stack"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">Snowflake</span><span class="tag">Datavant</span></div>
                     <ul class="bullets">
-                        <li>PHI-safe patient overlap quantification app; reduced ~5-day analyst engagement → ~1-hour self-serve</li>
-                        <li>Added Excel/PDF/PowerPoint report generation enabling SAs to run commercial analyses independently</li>
+                        <li>HIPAA-compliant web app quantifying patient overlaps between customer datasets and Komodo's claims database using Datavant de-identified tokens with zero PHI exposure, turnaround from a ~5-day analyst engagement to ~1-hour self-serve</li>
+                        <li>Added Excel/PDF/PowerPoint report generation, enabling SAs to run analyses for customer opportunities without engineering or analytics support</li>
                     </ul>
                 </div>
                 <div class="proj-card">
                     <div class="proj-card-hd"><span class="proj-name">Data Dictionary Builder</span><span class="proj-badge">Python · React · TypeScript</span></div>
-                    <div class="proj-stack"><span class="tag">Python</span><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">XLSX config</span></div>
+                    <div class="proj-stack"><span class="tag">Python</span><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Snowflake</span></div>
                     <ul class="bullets">
-                        <li>Auto-generated field-level docs replacing hand-maintained per-customer dictionaries</li>
-                        <li>Cut authoring from ~30 min → ~30 sec across 200+ active customers; single source of truth for delivery metadata</li>
+                        <li>Parameterized generator replacing hand-maintained, per-customer dictionaries with auto-generated field-level documentation tied to data fabric, NPI treatment, and delivery type</li>
+                        <li>Cut per-delivery data-dictionary authoring from ~30 min → ~30 sec across 250+ active customers; established a single source of truth for delivery field metadata across all concurrent deliveries</li>
                     </ul>
                 </div>
             </div>
@@ -1076,17 +1092,15 @@
                     <div class="proj-card-hd"><span class="proj-name">MeLift</span><span class="proj-badge">iOS · Swift · Supabase</span></div>
                     <div class="proj-stack"><span class="tag">Swift</span><span class="tag">SwiftUI</span><span class="tag">Supabase</span><span class="tag">PostgreSQL</span><span class="tag">Swift Charts</span></div>
                     <ul class="bullets">
-                        <li>Native iOS workout tracker with MVVM, personal records engine, portable .melift JSON sharing format, and Swift Charts analytics</li>
-                        <li>Efficient nested Supabase queries eliminating N+1 patterns; Keychain-persisted auth with full password-reset flow</li>
+                        <li>Swift/SwiftUI fitness tracker on Supabase with a personal-records engine, portable JSON export format, and Swift Charts analytics.</li>
                     </ul>
                     <span class="proj-cta">view case study <span class="proj-cta-arrow">&rarr;</span></span>
                 </a>
                 <a href="projects/whattowatch/" class="proj-card proj-card--link">
                     <div class="proj-card-hd"><span class="proj-name">WhatToWatch</span><span class="proj-badge">tvOS · SwiftUI · Python</span></div>
-                    <div class="proj-stack"><span class="tag">SwiftUI</span><span class="tag">SwiftData</span><span class="tag">Python</span><span class="tag">PostgreSQL</span><span class="tag">GitHub Actions</span><span class="tag">Playwright</span></div>
+                    <div class="proj-stack"><span class="tag">SwiftUI</span><span class="tag">SwiftData</span><span class="tag">Python</span><span class="tag">PostgreSQL</span><span class="tag">GitHub Actions</span></div>
                     <ul class="bullets">
-                        <li>Apple TV streaming aggregator with Top Shelf extension, @Observable, actor isolation, async let parallelism; zero third-party Swift dependencies</li>
-                        <li>Python async pipeline aggregating 4 APIs + headless scrapers via nightly GitHub Actions cron with Playwright/Chromium</li>
+                        <li>SwiftUI app with Top Shelf extension and SwiftData persistence, backed by a Python async pipeline aggregating 4 APIs with nightly PostgreSQL upserts via GitHub Actions</li>
                     </ul>
                     <span class="proj-cta">view case study <span class="proj-cta-arrow">&rarr;</span></span>
                 </a>
@@ -1205,7 +1219,7 @@ const LINES = [
 
 const RESULTS = [
     { col: 'name',     val: 'Alex Rolnik',                    big: true },
-    { col: 'title',    val: 'Senior Solutions Architect',      big: false },
+    { col: 'title',    val: 'Senior Product Manager, Surfaces', big: false },
     { col: 'company',  val: 'Komodo Health, Inc.',             big: false },
     { col: 'location', val: 'New York, NY',                    big: false },
 ];
@@ -1323,12 +1337,13 @@ const SKILLS = [
     { skill: 'SQL Procedures', cat: 'Data Engineering', level: 'Expert', where: 'Curinos, Komodo', years: '7 yrs', yearsN: 7 },
     { skill: 'ELT / ETL', cat: 'Methodologies', level: 'Advanced', where: 'Komodo, Curinos, Rivery', years: '8 yrs', yearsN: 8 },
     { skill: 'Data Analytics', cat: 'Methodologies', level: 'Advanced', where: 'Komodo, Curinos, Rivery, Accenture', years: '10+ yrs', yearsN: 10 },
+    { skill: 'Data QA & Validation', cat: 'Methodologies', level: 'Expert', where: 'Komodo, Curinos', years: '8 yrs', yearsN: 8 },
     { skill: 'Data Management', cat: 'Methodologies', level: 'Advanced', where: 'Komodo, Curinos, Rivery', years: '8 yrs', yearsN: 8 },
     { skill: 'JIRA', cat: 'Dev & Collaboration', level: 'Expert', where: 'Komodo, Curinos, Rivery, Accenture', years: '8 yrs', yearsN: 8 },
     { skill: 'Agentic Workflows', cat: 'AI / LLM', level: 'Advanced', where: 'Komodo', years: '2 yrs', yearsN: 2 },
     { skill: 'Gemini', cat: 'AI / LLM', level: 'Advanced', where: 'Komodo', years: '1 yr', yearsN: 1 },
     { skill: 'ChatGPT', cat: 'AI / LLM', level: 'Advanced', where: 'Komodo', years: '2 yrs', yearsN: 2 },
-    { skill: 'Antigravity', cat: 'AI / LLM', level: 'Expert', where: 'Komodo, Personal projects', years: '1 yr', yearsN: 1 },
+    { skill: 'Antigravity', cat: 'AI / LLM', level: 'Advanced', where: 'Komodo, Personal projects', years: '1 yr', yearsN: 1 },
     { skill: 'Python Scripting', cat: 'AI / LLM', level: 'Advanced', where: 'Komodo, Rivery', years: '5 yrs', yearsN: 5 },
     { skill: 'Tableau', cat: 'Data Platforms', level: 'Intermediate', where: 'Curinos, Accenture', years: '5 yrs', yearsN: 5 },
     { skill: 'BigQuery', cat: 'Data Platforms', level: 'Intermediate', where: 'Komodo, Rivery', years: '3 yrs', yearsN: 3 },
@@ -1478,7 +1493,7 @@ function showTable() {
 
 
 // ── Gantt chart ────────────────────────────────────────────────────────────
-const GANTT_MAX = 149;
+const GANTT_MAX = 152;
 function gOff(ym) { return !ym ? GANTT_MAX : (ym[0]-2014)*12+(ym[1]-1); }
 function gFmt(ym) {
     if (!ym) return 'Present';
@@ -1500,7 +1515,8 @@ const GANTT_DATA = [
     ]},
     { company:'Komodo Health', color:'#4b9eff', roles:[
         { title:'Sr. Solutions Architect III', id:'role-komodo-sa3', start:[2022,6], end:[2024,3] },
-        { title:'Sr. Solutions Architect IV',  id:'role-komodo-sa4', start:[2024,4], end:null     },
+        { title:'Sr. Solutions Architect IV',  id:'role-komodo-sa4', start:[2024,4], end:[2026,6] },
+        { title:'Sr. Product Manager',         id:'role-komodo-spm', start:[2026,6], end:null     },
     ]},
 ];
 const YEAR_MARKS = [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026];
@@ -1517,15 +1533,16 @@ function buildGantt() {
         h += `<div class="gantt-year-tick" style="left:${pct}%">${y}</div>`;
     });
     h += '</div>';
+    const grids = YEAR_MARKS.map(y=>`<div class="gantt-gridline" style="left:${(gOff([y,1])/GANTT_MAX*100).toFixed(2)}%"></div>`).join('');
+    const now = (gOff([2026,8])/GANTT_MAX*100).toFixed(2);
     GANTT_DATA.forEach(grp => {
-        grp.roles.forEach((role, ri) => {
+        let rows = '';
+        grp.roles.forEach(role => {
             const lp = (gOff(role.start)/GANTT_MAX*100).toFixed(2);
             const wp = ((gOff(role.end)-gOff(role.start))/GANTT_MAX*100).toFixed(2);
             const dates = gFmt(role.start)+' – '+gFmt(role.end);
-            const grids = YEAR_MARKS.map(y=>`<div class="gantt-gridline" style="left:${(gOff([y,1])/GANTT_MAX*100).toFixed(2)}%"></div>`).join('');
-            const now = (gOff([2026,5])/GANTT_MAX*100).toFixed(2);
-            h += `<div class="gantt-row">
-                <div class="gantt-row-label">${ri===0?`<strong>${grp.company}</strong>`:''}<span>${role.title}</span></div>
+            rows += `<div class="gantt-row">
+                <div class="gantt-role-label">${role.title}</div>
                 <div class="gantt-bars-area">${grids}
                     <div class="gantt-present-line" style="left:${now}%"></div>
                     <div class="gantt-bar-el" style="left:${lp}%;width:${wp}%;background:${grp.color}"
@@ -1536,6 +1553,12 @@ function buildGantt() {
                 </div>
             </div>`;
         });
+        h += `<div class="gantt-group">
+            <div class="gantt-group-company" style="border-right-color:${grp.color}">
+                <span class="gantt-company-name">${grp.company}</span>
+            </div>
+            <div class="gantt-group-rows">${rows}</div>
+        </div>`;
     });
     h += '</div>';
     container.innerHTML = h;
@@ -1575,7 +1598,7 @@ function buildTicker() {
     const items = [
         `<span class="ticker-item ticker-stat" data-href="#about">10+ YRS EXPERIENCE</span>`,
         `<span class="ticker-item ticker-stat" data-href="#about">100+ CLIENT ENGAGEMENTS</span>`,
-        `<span class="ticker-item ticker-stat" data-href="#projects">5 AI APPS SHIPPED</span>`,
+        `<span class="ticker-item ticker-stat" data-href="#projects">7 AI APPS SHIPPED</span>`,
         `<span class="ticker-item ticker-stat" data-href="#about">40H/MO AUTOMATION SAVINGS</span>`,
         `<span class="ticker-item ticker-role" data-href="#experience">KOMODO HEALTH ▸ SR. SOLUTIONS ARCHITECT IV</span>`,
         `<span class="ticker-item ticker-role" data-href="#experience">RIVERY TECHNOLOGIES ▸ LEAD SOLUTIONS ARCHITECT</span>`,
